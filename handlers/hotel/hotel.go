@@ -9,15 +9,13 @@ import (
 )
 
 type Hotels struct {
-	log hclog.Logger
-	db  *data.HotelsDB
+	db *data.HotelsDB
 }
 
 func NewHotels(l hclog.Logger, db *data.HotelsDB) *Hotels {
-	return &Hotels{log: l, db: db}
+	return &Hotels{db: db}
 }
 
 func (h *Hotels) ListAll(c echo.Context) error {
-	h.log.Debug("List All")
 	return c.String(http.StatusOK, "Hello, World! List All")
 }
