@@ -4,8 +4,8 @@ import (
 	"subsea/data"
 	handlers "subsea/handlers/hotel"
 
-	"github.com/hashicorp/go-hclog"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nicholasjackson/env"
 )
 
@@ -13,6 +13,7 @@ var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for t
 
 func main() {
 	// parse environment
+
 	err := env.Parse()
 
 	if err != nil {
@@ -20,13 +21,13 @@ func main() {
 	}
 
 	// setting up new log
-	l := hclog.Default()
 
-	db := data.NewHotelDB(l)
-	hh := handlers.NewHotels(l, db)
+	db := data.NewHotelDB()
+	hh := handlers.NewHotels(db)
 
 	//create new servr
 	e := echo.New()
+	e.Logger.SetLevel(log.DEBUG)
 
 	// basic handler
 	e.GET("/", hh.ListAll)
