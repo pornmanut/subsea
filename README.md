@@ -1,2 +1,6 @@
 # subsea
-a hotel website. represent only hotel in sea.
+a demo hotel website. represent a imaging underwater hotel in sea.
+
+
+# server run 
+docker compose up
