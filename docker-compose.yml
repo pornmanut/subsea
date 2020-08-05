@@ -1,9 +1,11 @@
 version: "3"
 services:
-  app:
-    build: .
-    ports:
-    - "8080:8080"
+  # app:
+  #   build: .
+  #   ports:
+  #   - "8080:8080"
+  #   depends_on:
+  #   - database
   database:
     image: mongo
     ports:

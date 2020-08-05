@@ -17,5 +17,7 @@ func NewHotels(db *data.HotelsDB) *Hotels {
 
 func (h *Hotels) ListAll(c echo.Context) error {
 	c.Echo().Logger.Debug("Hello world")
-	return c.String(http.StatusOK, "Hello, World! List All")
+
+	hotels := h.db.GetHotels()
+	return c.JSON(http.StatusOK, hotels)
 }
