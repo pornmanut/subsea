@@ -19,14 +19,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// setting up new log
-
-	db := data.NewHotelDB()
-	hh := handlers.NewHotels(db)
-
 	//create new servr
 	e := echo.New()
+	// setting up new log
+
+	db, err := data.NewHotelMongo()
+
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	hh := handlers.NewHotels(db)
+
 	e.Logger.SetLevel(log.DEBUG)
 
 	// basic handler
