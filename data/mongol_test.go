@@ -31,3 +31,18 @@ func TestList(T *testing.T) {
 	}
 	fmt.Println(result)
 }
+
+func TestGet(T *testing.T) {
+	db, err := NewHotelMongo()
+
+	if err != nil {
+		T.Error(err)
+	}
+
+	result, err := db.Get("God")
+
+	if err != nil {
+		T.Error(err)
+	}
+	fmt.Println(result)
+}

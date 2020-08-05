@@ -70,3 +70,23 @@ func (db *MongoDB) List() (Hotels, error) {
 	}
 	return result, nil
 }
+
+func (db *MongoDB) Get(name string) (Hotels, error) {
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	cursor, err := db.col.Find(ctx, bson.M{"name": name})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var result Hotels
+	for cursor.Next(ctx) {
+		var hotel Hotel
+		if err = cursor.Decode(&hotel); err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, hotel)
+	}
+	return result, nil
+}
