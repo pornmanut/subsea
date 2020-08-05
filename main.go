@@ -1,8 +1,10 @@
 package main
 
 import (
-	"net/http"
+	"subsea/data"
+	handlers "subsea/handlers/hotel"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/labstack/echo/v4"
 	"github.com/nicholasjackson/env"
 )
@@ -17,14 +19,21 @@ func main() {
 		panic(err)
 	}
 
+	// setting up new log
+	l := hclog.Default()
+
+	db := data.NewHotelDB(l)
+	hh := handlers.NewHotels(l, db)
+
 	//create new servr
 	e := echo.New()
 
 	// basic handler
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-
+	e.GET("/", hh.ListAll)
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
 }
+
+// func hello(c echo.Context) error {
+// 	return c.String(http.StatusOK, "Hello, World!")
+// }
