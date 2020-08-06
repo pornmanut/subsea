@@ -10,12 +10,13 @@ import (
 
 // UserHandler is user handlers
 type UserHandler struct {
+	v  *data.Validation
 	db *data.UserDB
 }
 
 // NewUsers is constructor
-func NewUsers(db *data.UserDB) *UserHandler {
-	return &UserHandler{db: db}
+func NewUsers(v *data.Validation, db *data.UserDB) *UserHandler {
+	return &UserHandler{db: db, v: v}
 }
 
 // Register handlers

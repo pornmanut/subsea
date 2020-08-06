@@ -26,7 +26,7 @@ func main() {
 	e := echo.New()
 
 	// create new vlidate
-	// echo.Vaildator contain interface validate
+	v := data.NewValidation()
 	// setting up new log
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	hotelH := handlers.NewHotels(db)
-	userH := handlers.NewUsers(db2)
+	userH := handlers.NewUsers(v, db2)
 
 	e.Logger.SetLevel(log.DEBUG)
 
@@ -50,7 +50,7 @@ func main() {
 	// e.GET("/hotel/:name", nil)
 	// e.POST("/hotel", nil)
 
-	e.POST("/register", userH.Register)
+	e.POST("/register", userH.Register, userH.MiddlewareValidateUser)
 
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
