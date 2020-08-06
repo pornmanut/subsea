@@ -11,5 +11,7 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/nicholasjackson/env v0.6.0
 	go.mongodb.org/mongo-driver v1.4.0
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
+	golang.org/x/tools v0.0.0-20200806022845-90696ccdc692 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

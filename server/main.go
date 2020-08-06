@@ -4,6 +4,7 @@ import (
 	"context"
 	"subsea/data"
 	handlers "subsea/handlers"
+	"subsea/pwd"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -27,6 +28,7 @@ func main() {
 
 	// create new vlidate
 	v := data.NewValidation()
+	b := pwd.NewBcrypt(16)
 	// setting up new log
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
@@ -39,7 +41,7 @@ func main() {
 	}
 
 	hotelH := handlers.NewHotels(db)
-	userH := handlers.NewUsers(v, db2)
+	userH := handlers.NewUsers(v, db2, b)
 
 	e.Logger.SetLevel(log.DEBUG)
 
