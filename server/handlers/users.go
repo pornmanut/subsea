@@ -6,6 +6,7 @@ import (
 	"subsea/data"
 	"subsea/models"
 	"subsea/pwd"
+	"subsea/webtoken"
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,14 +14,15 @@ import (
 
 // UserHandler is user handlers
 type UserHandler struct {
-	v  *data.Validation
-	db *data.UserDB
-	b  *pwd.Bcrypt
+	v   *data.Validation
+	db  *data.UserDB
+	b   *pwd.Bcrypt
+	jwt *webtoken.JWT
 }
 
 // NewUsers is constructor
-func NewUsers(v *data.Validation, db *data.UserDB, b *pwd.Bcrypt) *UserHandler {
-	return &UserHandler{db: db, v: v, b: b}
+func NewUsers(v *data.Validation, db *data.UserDB, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
+	return &UserHandler{db: db, v: v, b: b, jwt: jwt}
 }
 
 // RegisterUser handlers
@@ -71,12 +73,19 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 	user, err := u.db.FindOne(bson.M{"username": login.Username})
 
 	if err != nil {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(http.StatusNotFound, "Not found user")
 	}
 	// compare password
 	if u.b.Compare(login.Password, user.Password) {
 		//TODO: jwt generate token
-		return c.JSON(http.StatusOK, "match")
+
+		token, err := u.jwt.CreateToken(user.Username)
+
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, fmt.Sprintf("Token %s", token))
 	}
-	return c.NoContent(http.StatusUnauthorized)
+	return c.JSON(http.StatusUnauthorized, "Password doesn't match")
 }

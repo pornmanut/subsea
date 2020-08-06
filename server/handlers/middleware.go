@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"subsea/models"
+	"subsea/webtoken"
 
 	"github.com/labstack/echo/v4"
 )
@@ -63,6 +64,24 @@ func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.Handle
 			c.Error(err)
 		}
 		return nil
+	}
+}
+
+//NewMiddlewareAuth is construct for create middleware auth
+func NewMiddlewareAuth(jwt *webtoken.JWT) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			err := jwt.TokenValid(c.Request())
+			if err != nil {
+				c.Echo().Logger.Debug("token not vaild")
+				return c.JSON(http.StatusUnauthorized, "Unauthorized")
+			}
+			c.Echo().Logger.Debug("token vaild")
+			if err := next(c); err != nil {
+				c.Error(err)
+			}
+			return nil
+		}
 	}
 }
 

@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"subsea/data"
 	handlers "subsea/handlers"
 	"subsea/pwd"
+	"subsea/webtoken"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -14,6 +16,7 @@ import (
 
 var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for the server")
 var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
+var jwtSecret = env.String("JWT_SECRET", false, "cat", "Secret for jwt")
 
 func main() {
 	// parse environment
@@ -29,6 +32,8 @@ func main() {
 	// create new vlidate
 	v := data.NewValidation()
 	b := pwd.NewBcrypt(16)
+	j := webtoken.NewJWT(6*time.Hour, *jwtSecret)
+	middlewareAuth := handlers.NewMiddlewareAuth(j)
 	// setting up new log
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
@@ -41,7 +46,7 @@ func main() {
 	}
 
 	hotelH := handlers.NewHotels(db)
-	userH := handlers.NewUsers(v, db2, b)
+	userH := handlers.NewUsers(v, db2, b, j)
 
 	e.Logger.SetLevel(log.DEBUG)
 
@@ -54,11 +59,12 @@ func main() {
 
 	e.POST("/register", userH.RegisterUser, userH.MiddlewareValidateUser)
 	e.POST("/login", userH.LoginUser, userH.MiddlewareValidateLogin)
+	e.GET("/secret", hello, middlewareAuth)
 
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
 }
 
-// func hello(c echo.Context) error {
-// 	return c.String(http.StatusOK, "Hello, World!")
-// }
+func hello(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
+}
