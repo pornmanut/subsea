@@ -27,20 +27,32 @@ func NewUsers(v *data.Validation, db *data.UserDB, b *pwd.Bcrypt) *UserHandler {
 func (u *UserHandler) RegisterUser(c echo.Context) error {
 	c.Echo().Logger.Debug("Register")
 
-	user := c.Get("user").(models.User)
-	hash, err := u.b.Hash(user.Password)
+	regisUser := c.Get("user").(models.User)
+
+	//check email and username is already exist
+	findUser, err := u.db.FindOne(
+		bson.M{"$or": []interface{}{
+			bson.M{"username": regisUser.Username},
+			bson.M{"email": regisUser.Email},
+		}})
+
+	if findUser != nil {
+		return c.JSON(http.StatusConflict, `{"message": already exist }`)
+	}
+
+	hash, err := u.b.Hash(regisUser.Password)
 	if err != nil {
 		return err
 	}
 	// setting new password
-	user.Password = hash
+	regisUser.Password = hash
 
-	err = u.db.Add(user)
+	err = u.db.Add(regisUser)
 
 	if err != nil {
 		return err
 	}
-	c.Echo().Logger.Info("Insert User:", fmt.Sprintf("%+v\n", user))
+	c.Echo().Logger.Info("Insert User:", fmt.Sprintf("%+v\n", regisUser))
 	return c.JSON(http.StatusOK, "success")
 }
 
