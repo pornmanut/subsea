@@ -24,18 +24,22 @@ func main() {
 	}
 	//create new servr
 	e := echo.New()
+
+	// create new vlidate
+	// echo.Vaildator contain interface validate
 	// setting up new log
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
 	defer client.Disconnect(ctx)
 
 	db, err := data.NewHotelMongo(client)
-
+	db2 := data.NewUserDB(client)
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
 	hotelH := handlers.NewHotels(db)
+	userH := handlers.NewUsers(db2)
 
 	e.Logger.SetLevel(log.DEBUG)
 
@@ -46,7 +50,7 @@ func main() {
 	// e.GET("/hotel/:name", nil)
 	// e.POST("/hotel", nil)
 
-	e.POST("/register", nil)
+	e.POST("/register", userH.Register)
 
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
