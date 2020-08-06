@@ -16,9 +16,7 @@ type UserContext struct {
 func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.HandlerFunc {
 	// header
 	return func(c echo.Context) error {
-
 		var user models.User
-
 		// bind user
 		if err := c.Bind(&user); err != nil {
 			return c.NoContent(http.StatusBadRequest)

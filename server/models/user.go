@@ -5,12 +5,12 @@ type Booking string
 
 // User struct is an informaton of signle user and booking
 type User struct {
-	Email     string    `json:"email" validate:"required"`
+	Email     string    `json:"email" validate:"required,email"`
 	Username  string    `json:"username" validate:"required"`
 	Password  string    `json:"password" validate:"required"`
-	FirstName string    `json:"fistname"`
-	LastName  string    `json:"lastname"`
-	BirthDate string    `json:"brithdate"`
+	FirstName string    `json:"firstname" validate:"required"`
+	LastName  string    `json:"lastname"  validate:"required"`
+	BirthDate string    `json:"birthdate" validate:"required,date"`
 	Bookings  []Booking `json:"bookings"`
 }
 

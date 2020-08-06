@@ -2,6 +2,8 @@ package data
 
 import (
 	"fmt"
+	"regexp"
+	"time"
 
 	"github.com/go-playground/validator"
 )
@@ -40,18 +42,13 @@ type Validation struct {
 
 // NewValidation create a new Validation type for validate sturct
 func NewValidation() *Validation {
-	validator := validator.New()
-	return &Validation{validate: validator}
+	validate := validator.New()
+	validate.RegisterValidation("date", validateDate)
+	return &Validation{validate: validate}
 }
-
-// Validate the item
-// for more detail the returned error can be cast into a
-// validator.ValidationErrors collection
-//
 
 // Validate is methods for validation given by interface struct return mutil errors
 func (v *Validation) Validate(i interface{}) ValidationErrors {
-
 	err := v.validate.Struct(i)
 	if ves, ok := err.(validator.ValidationErrors); ok {
 		if len(ves) == 0 {
@@ -69,4 +66,24 @@ func (v *Validation) Validate(i interface{}) ValidationErrors {
 		return returnErrs
 	}
 	return nil
+}
+
+// validateDate add to fieldLevel
+func validateDate(fl validator.FieldLevel) bool {
+	// regexp for time
+	re := regexp.MustCompile(`([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))`)
+	date := re.FindAllString(fl.Field().String(), -1)
+
+	if len(date) == 1 {
+		current := time.Now().Local()
+		format := "2006-01-02"
+		target, err := time.Parse(format, date[0])
+		if err != nil {
+			return false
+		}
+		// check you come from the future?
+		return target.Before(current)
+
+	}
+	return false
 }
