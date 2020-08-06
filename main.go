@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"subsea/data"
-	handlers "subsea/handlers/hotel"
+	handlers "subsea/handlers"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -45,6 +45,8 @@ func main() {
 	// e.GET("/hotels/search", nil)
 	// e.GET("/hotel/:name", nil)
 	// e.POST("/hotel", nil)
+
+	e.POST("/register", nil)
 
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
