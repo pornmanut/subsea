@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"subsea/data"
 	handlers "subsea/handlers/hotel"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -10,6 +12,7 @@ import (
 )
 
 var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for the server")
+var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
 
 func main() {
 	// parse environment
@@ -22,19 +25,27 @@ func main() {
 	//create new servr
 	e := echo.New()
 	// setting up new log
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := data.ConnectMongoServer(ctx, *dbAddress)
+	defer client.Disconnect(ctx)
 
-	db, err := data.NewHotelMongo()
+	db, err := data.NewHotelMongo(client)
 
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	hh := handlers.NewHotels(db)
+	hotelH := handlers.NewHotels(db)
 
 	e.Logger.SetLevel(log.DEBUG)
 
 	// basic handler
-	e.GET("/", hh.ListAll)
+
+	e.GET("/hotels", hotelH.ListHotels)
+	// e.GET("/hotels/search", nil)
+	// e.GET("/hotel/:name", nil)
+	// e.POST("/hotel", nil)
+
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))
 }
