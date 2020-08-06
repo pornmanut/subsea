@@ -1,9 +1,15 @@
 TODO:
     DAY 2:
     Server: 
-        - jwt
-        - booking
-        - reactor database
+        jwt:
+            - generate
+            - middleware check jwt
+        reactor database:
+            - hotel
+            - db
+        booking:
+            - add booking into user
+            - decase booking in hotel
 
     DAY 3:
     - React
@@ -11,3 +17,5 @@ TODO:
 
     DAY 4: 
     - Deploy
+    - API swagger
+    - POSTMAN
