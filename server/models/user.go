@@ -16,3 +16,9 @@ type User struct {
 
 // Users is a collction of user
 type Users []User
+
+//Login is login from to pass and validate
+type Login struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}

@@ -52,7 +52,8 @@ func main() {
 	// e.GET("/hotel/:name", nil)
 	// e.POST("/hotel", nil)
 
-	e.POST("/register", userH.Register, userH.MiddlewareValidateUser)
+	e.POST("/register", userH.RegisterUser, userH.MiddlewareValidateUser)
+	e.POST("/login", userH.LoginUser, userH.MiddlewareValidateLogin)
 
 	// serve server on port
 	e.Logger.Fatal(e.Start(*bindAddress))

@@ -16,7 +16,7 @@ func NewBcrypt(cost int) *Bcrypt {
 
 // Hash is method for Bcypt to hash password return to string
 func (b *Bcrypt) Hash(password string) (string, error) {
-	// TODO: implement bcypt speed
+	// bcrypt easy steady but slow
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), b.cost)
 	if err != nil {
 		return "", err
