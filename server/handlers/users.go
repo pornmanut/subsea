@@ -23,12 +23,8 @@ func NewUsers(v *data.Validation, db *data.UserDB) *UserHandler {
 func (u *UserHandler) Register(c echo.Context) error {
 	c.Echo().Logger.Debug("Register")
 
-	user := data.User{}
-
-	if err := c.Bind(&user); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
+	user := c.Get("user")
 
 	c.Echo().Logger.Info(fmt.Sprintf("%+v\n", user))
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, user)
 }
