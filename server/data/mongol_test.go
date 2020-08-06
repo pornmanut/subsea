@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"subsea/models"
 	"testing"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +26,7 @@ func TestAdd(T *testing.T) {
 	if err != nil {
 		T.Error(err)
 	}
-	h := Hotel{
+	h := models.Hotel{
 		Name: "WAHA",
 	}
 	db.Add(h)
@@ -89,7 +90,7 @@ func TestCycle(T *testing.T) {
 	if err != nil {
 		T.Error(err)
 	}
-	h := Hotel{
+	h := models.Hotel{
 		Name:   "Awesome",
 		Price:  5000.01,
 		Height: -300.34,

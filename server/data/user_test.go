@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"subsea/models"
 	"testing"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,13 +28,13 @@ func TestAddUser(T *testing.T) {
 	defer client.Disconnect(context.TODO())
 	db := NewUserDB(client)
 
-	err := db.Add(User{
+	err := db.Add(models.User{
 		Email:     "god",
 		Username:  "yea",
 		FirstName: "wod",
 		LastName:  "haha",
 		BirthDate: "todo",
-		Bookings: []Booking{
+		Bookings: []models.Booking{
 			"abc",
 			"dec",
 		},

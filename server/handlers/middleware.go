@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"net/http"
-	"subsea/data"
+	"subsea/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,7 +17,7 @@ func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.Handler
 	// header
 	return func(c echo.Context) error {
 
-		var user data.User
+		var user models.User
 
 		// bind user
 		if err := c.Bind(&user); err != nil {

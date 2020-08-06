@@ -5,26 +5,11 @@ import (
 	"fmt"
 	"log"
 
+	"subsea/models"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
-// Booking define a string match to object_id of hotels collection
-type Booking string
-
-// User struct is an informaton of signle user and booking
-type User struct {
-	Email     string    `json:"email" validate:"required"`
-	Username  string    `json:"username" validate:"required"`
-	Password  string    `json:"password" validate:"required"`
-	FirstName string    `json:"fistname"`
-	LastName  string    `json:"lastname"`
-	BirthDate string    `json:"brithdate"`
-	Bookings  []Booking `json:"bookings"`
-}
-
-// Users is a collction of user
-type Users []User
 
 // UserDB is user database collection mongoCollection
 type UserDB struct {
@@ -38,7 +23,7 @@ func NewUserDB(client *mongo.Client) *UserDB {
 }
 
 //Add add one records give by User struct
-func (db *UserDB) Add(user User) error {
+func (db *UserDB) Add(user models.User) error {
 	result, err := db.collection.InsertOne(context.TODO(), user)
 	if err != nil {
 		return err
@@ -48,9 +33,9 @@ func (db *UserDB) Add(user User) error {
 }
 
 //FindOne find only one records from collection returns to user
-func (db *UserDB) FindOne(filter bson.M) (*User, error) {
+func (db *UserDB) FindOne(filter bson.M) (*models.User, error) {
 	cursor := db.collection.FindOne(context.TODO(), filter)
-	var user User
+	var user models.User
 	err := cursor.Decode(&user)
 
 	if err != nil {
@@ -60,16 +45,16 @@ func (db *UserDB) FindOne(filter bson.M) (*User, error) {
 }
 
 //Find find many records from collection given by filter returns to a collection of user
-func (db *UserDB) Find(filter bson.M) (Users, error) {
+func (db *UserDB) Find(filter bson.M) (models.Users, error) {
 	cursor, err := db.collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(context.TODO())
 
-	var result Users
+	var result models.Users
 	for cursor.Next(context.TODO()) {
-		var user User
+		var user models.User
 		if err = cursor.Decode(&user); err != nil {
 			log.Fatal(err)
 		}

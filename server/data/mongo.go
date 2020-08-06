@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"subsea/models"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,7 +42,7 @@ func NewHotelMongo(client *mongo.Client) (*MongoDB, error) {
 	return &MongoDB{col: col}, nil
 }
 
-func (db *MongoDB) Add(h Hotel) error {
+func (db *MongoDB) Add(h models.Hotel) error {
 
 	result, err := db.col.InsertOne(context.TODO(), h)
 	if err != nil {
@@ -51,7 +52,7 @@ func (db *MongoDB) Add(h Hotel) error {
 	return nil
 }
 
-func (db *MongoDB) List() (Hotels, error) {
+func (db *MongoDB) List() (models.Hotels, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	cursor, err := db.col.Find(ctx, bson.D{})
@@ -60,9 +61,9 @@ func (db *MongoDB) List() (Hotels, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var result Hotels
+	var result models.Hotels
 	for cursor.Next(ctx) {
-		var hotel Hotel
+		var hotel models.Hotel
 		if err = cursor.Decode(&hotel); err != nil {
 			log.Fatal(err)
 		}
@@ -71,7 +72,7 @@ func (db *MongoDB) List() (Hotels, error) {
 	return result, nil
 }
 
-func (db *MongoDB) Get(name string) (Hotels, error) {
+func (db *MongoDB) Get(name string) (models.Hotels, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	cursor, err := db.col.Find(ctx, bson.M{"name": name})
@@ -80,9 +81,9 @@ func (db *MongoDB) Get(name string) (Hotels, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var result Hotels
+	var result models.Hotels
 	for cursor.Next(ctx) {
-		var hotel Hotel
+		var hotel models.Hotel
 		if err = cursor.Decode(&hotel); err != nil {
 			log.Fatal(err)
 		}
