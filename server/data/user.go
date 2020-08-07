@@ -17,14 +17,14 @@ type UserDB struct {
 }
 
 // NewUserDB following by constructor methods
-func NewUserDB(client *mongo.Client) *UserDB {
-	col := client.Database("subsea").Collection("users")
+func NewUserDB(db *mongo.Database) *UserDB {
+	col := db.Collection("users")
 	return &UserDB{collection: col}
 }
 
 //Add add one records give by User struct
-func (db *UserDB) Add(user models.User) error {
-	result, err := db.collection.InsertOne(context.TODO(), user)
+func (db *UserDB) Add(item models.User) error {
+	result, err := db.collection.InsertOne(context.TODO(), item)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,6 @@ func (db *UserDB) FindOne(filter bson.M) (*models.User, error) {
 	cursor := db.collection.FindOne(context.TODO(), filter)
 	var user models.User
 	err := cursor.Decode(&user)
-
 	if err != nil {
 		return nil, err
 	}

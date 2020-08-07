@@ -39,14 +39,14 @@ func main() {
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
 	defer client.Disconnect(ctx)
 
-	db, err := data.NewHotelMongo(client)
-	db2 := data.NewUserDB(client)
+	db := data.NewDatabase(client, "subsea")
+
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	hotelH := handlers.NewHotels(db)
-	userH := handlers.NewUsers(v, db2, b, j)
+	hotelH := handlers.NewHotels(*db.HotelDB)
+	userH := handlers.NewUsers(v, db.UserDB, b, j)
 
 	e.Logger.SetLevel(log.DEBUG)
 
