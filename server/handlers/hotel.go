@@ -42,8 +42,19 @@ func (h *Hotels) Booking(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
+	hotels.Booking = hotels.Booking + 1
+	user.Bookings = append(user.Bookings, models.Booking(hotels.ID.String()))
+	// TODO: must change to objectID
+	err = h.hotelDB.ReplaceOne(bson.M{"name": hotelName}, *hotels)
+	if err != nil {
+		return err
+	}
+	err = h.userDB.ReplaceOne(bson.M{"username": tokenDetail.Username}, *user)
+	if err != nil {
+		return err
+	}
 	fmt.Println(user, hotels)
-	return c.JSON(http.StatusOK, hotels)
+	return c.JSON(http.StatusOK, user)
 }
 
 // ListHotels list all hotel in database

@@ -70,3 +70,13 @@ func (db *HotelDB) DeleteOne(filter bson.M) error {
 	log.Println(result)
 	return nil
 }
+
+//ReplaceOne find many records from collection given by filter returns to a collection of user
+func (db *HotelDB) ReplaceOne(filter bson.M, hotel models.Hotel) error {
+	result, err := db.collection.ReplaceOne(context.TODO(), filter, hotel)
+	if err != nil {
+		return err
+	}
+	log.Println(result)
+	return nil
+}

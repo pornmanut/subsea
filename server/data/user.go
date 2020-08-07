@@ -71,3 +71,13 @@ func (db *UserDB) DeleteOne(filter bson.M) error {
 	log.Println(result)
 	return nil
 }
+
+//ReplaceOne find many records from collection given by filter returns to a collection of user
+func (db *UserDB) ReplaceOne(filter bson.M, user models.User) error {
+	result, err := db.collection.ReplaceOne(context.TODO(), filter, user)
+	if err != nil {
+		return err
+	}
+	log.Println(result)
+	return nil
+}
