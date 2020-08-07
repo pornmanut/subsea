@@ -1,6 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
-
+import axios from 'axios';
+import Hotel from './components/Hotel'
+import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
 import {
   BrowserRouter as Router,
@@ -12,19 +14,23 @@ import {
 function App() {
   return (
     <Router>
-      <div className="App">
         <Switch>
-            <Route path="/admin">
-            </Route>
-            <Route path="/">
+            <Route exact path="/admin">
               <HotelList/>
             </Route>
+            <Route exact path="/">
+              <HotelList/>
+            </Route>
+            <Route path='/hotels/:name' render={(props) => {
+                    return <Hotel name={props.match.params.name}/>
+
+                }} />
             <Route>
+              {/* TODO: 404 */}
+              <Notfound/>
             </Route>
           </Switch>
-      </div>
     </Router>
   );
 }
-
 export default App;
