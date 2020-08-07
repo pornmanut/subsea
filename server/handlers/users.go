@@ -22,7 +22,7 @@ type UserHandler struct {
 }
 
 // NewUsers is constructor
-func NewUsers(db data.Database, v *data.Validation, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
+func NewUsers(db *data.Database, v *data.Validation, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
 	return &UserHandler{userDB: db.UserDB, hotelDB: db.HotelDB, v: v, b: b, jwt: jwt}
 }
 

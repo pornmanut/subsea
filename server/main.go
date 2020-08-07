@@ -45,8 +45,8 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	hotelH := handlers.NewHotels(*db.HotelDB)
-	userH := handlers.NewUsers(v, db.UserDB, b, j)
+	hotelH := handlers.NewHotels(db)
+	userH := handlers.NewUsers(db, v, b, j)
 
 	e.Logger.SetLevel(log.DEBUG)
 
