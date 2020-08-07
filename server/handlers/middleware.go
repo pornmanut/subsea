@@ -8,11 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// UserContext is custom echo context
-type UserContext struct {
-	echo.Context
-}
-
 // MiddlewareValidateUser validates the user in the request and call net it ok
 func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.HandlerFunc {
 	// header
@@ -83,6 +78,41 @@ func NewMiddlewareAuth(jwt *webtoken.JWT) echo.MiddlewareFunc {
 			return nil
 		}
 	}
+}
+
+// MiddlewareValidateHotel validates the hotel in the request and call net it ok
+func (u *Hotels) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc {
+	// header
+	return func(c echo.Context) error {
+
+		if c.Request().Body == http.NoBody {
+			return c.JSON(http.StatusBadRequest, "request body")
+		}
+
+		c.Echo().Logger.Debug("Validate Hotel Middleware")
+		var hotel models.Hotel
+		// bind user
+		if err := c.Bind(&hotel); err != nil {
+			return c.NoContent(http.StatusBadRequest)
+		}
+		// validate the user
+		errs := u.v.Validate(hotel)
+
+		if len(errs) > 0 {
+			return c.JSON(http.StatusUnprocessableEntity, errs.Errors())
+		}
+
+		// TODO: check dulipcate email
+
+		// add user to context
+		c.Set("hotel", hotel)
+		// call next
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
+
 }
 
 // // MiddlewareFindByUserName given by user. find it and set to context

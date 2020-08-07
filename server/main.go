@@ -45,20 +45,26 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	hotelH := handlers.NewHotels(db)
+	hotelH := handlers.NewHotels(db, v)
 	userH := handlers.NewUsers(db, v, b, j)
 
 	e.Logger.SetLevel(log.DEBUG)
 
 	// basic handler
 
-	e.GET("/hotels", hotelH.ListHotels)
-	// e.GET("/hotels/search", nil)
-	// e.GET("/hotel/:name", nil)
-	// e.POST("/hotel", nil)
+	// POST hotel
+	e.POST("/hotels", hotelH.NewHotels, hotelH.MiddlewareValidateHotel)
 
+	// GET hotel
+	e.GET("/hotels", hotelH.ListHotels)
+	e.GET("/hotels/:name", hotelH.FindOneHotel)
+	e.GET("/hotels/search", hotelH.SearchHotel)
+
+	// POST user
 	e.POST("/register", userH.RegisterUser, userH.MiddlewareValidateUser)
 	e.POST("/login", userH.LoginUser, userH.MiddlewareValidateLogin)
+
+	e.GET("/users", userH.ListUser, middlewareAuth)
 	e.GET("/secret", hello, middlewareAuth)
 
 	// serve server on port

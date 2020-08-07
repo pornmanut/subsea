@@ -20,17 +20,15 @@ type HotelDB struct {
 // NewHotelDB defined by constructor methods
 func NewHotelDB(db *mongo.Database) *HotelDB {
 	col := db.Collection("hotels")
+
 	return &HotelDB{collection: col}
 }
 
 //Add add one records give by User struct
 func (db *HotelDB) Add(item models.Hotel) error {
 	result, err := db.collection.InsertOne(context.TODO(), item)
-	if err != nil {
-		return err
-	}
 	fmt.Println(result)
-	return nil
+	return err
 }
 
 //FindOne find only one records from collection returns to user

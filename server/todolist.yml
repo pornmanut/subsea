@@ -4,19 +4,15 @@ TODO:
 
 
     DAY 3:
-        reactor database:
-            - hotel
-            - db
         booking:
             - add booking into user
             - decase booking in hotel
-            search:
+        search:
                 
-    - API swagger
     - React
 
 
     DAY 4: 
     - Deploy
-
+    - API swagger
     - POSTMAN

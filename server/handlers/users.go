@@ -59,9 +59,24 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, "success")
 }
 
-//TODO: list
+// ListUser handlers
+func (u *UserHandler) ListUser(c echo.Context) error {
+	c.Echo().Logger.Debug("ListUser")
+
+	//check email and username is already exist
+	findUser, err := u.userDB.Find(bson.M{})
+
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if findUser == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, findUser)
+}
+
 //TODO: delete
-//TODO: username
 
 // LoginUser handlers is a login handlers to get models.login
 // and compare password and hash return jwt token for store in front-side
