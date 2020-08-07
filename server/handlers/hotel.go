@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"subsea/data"
 	"subsea/models"
@@ -28,15 +29,20 @@ func NewHotels(db *data.Database, v *data.Validation) *Hotels {
 
 // Booking booking user for hotel
 func (h *Hotels) Booking(c echo.Context) error {
-	c.Echo().Logger.Debug("ListHotels")
-	hotels, err := h.hotelDB.Find(bson.M{})
-	if err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	c.Echo().Logger.Debug("Booking")
 
-	if hotels == nil {
+	// get request
+	tokenDetail := c.Get("myuser").(models.UserTokenDetails)
+	hotelName := c.Param("name")
+	user, err := h.userDB.FindOne(bson.M{"username": tokenDetail.Username})
+	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
+	hotels, err := h.hotelDB.FindOne(bson.M{"name": hotelName})
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	fmt.Println(user, hotels)
 	return c.JSON(http.StatusOK, hotels)
 }
 
