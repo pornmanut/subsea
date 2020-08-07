@@ -1,19 +1,23 @@
 TODO:
-    DAY 2:
-    Server: 
-
-
     DAY 3:
-        booking:
-            - add booking into user
-            - decase booking in hotel
-s
-                
-    - React
-
+        React:
+            - PAGE show hotels
+            - component for hotels info
+            - component for hotels list
+            - Search bar
+            - LOGIN
+            - form for LOGIN
+            - comfirm password
+            - get token from server store on browser
+            - Booking
+            - show booking if LOGIN
+            - show my bookinglist
+            - scss 
+            - bootstrap 5 ? (i think in npm will have)
 
     DAY 4: 
     - Deploy
-    - API swagger
+    - OpenAPI swagger
     - POSTMAN
     - ERROR reponse
+    - add map
