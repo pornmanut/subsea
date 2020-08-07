@@ -66,6 +66,7 @@ func main() {
 	e.POST("/login", userH.LoginUser, userH.MiddlewareValidateLogin)
 
 	e.GET("/users", userH.ListUser, middlewareAuth)
+	e.GET("/users/booking", userH.ShowBooking, middlewareAuth)
 	e.GET("/secret", hello, middlewareAuth)
 
 	// serve server on port

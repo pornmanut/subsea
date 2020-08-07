@@ -43,7 +43,7 @@ func (h *Hotels) Booking(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 	hotels.Booking = hotels.Booking + 1
-	user.Bookings = append(user.Bookings, models.Booking(hotels.ID.String()))
+	user.Bookings = append(user.Bookings, models.Booking(hotels.ID.Hex()))
 	// TODO: must change to objectID
 	err = h.hotelDB.ReplaceOne(bson.M{"name": hotelName}, *hotels)
 	if err != nil {

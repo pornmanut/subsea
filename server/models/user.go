@@ -27,5 +27,5 @@ type Login struct {
 }
 
 type UserTokenDetails struct {
-	Username string
+	Username string `json:"username"`
 }

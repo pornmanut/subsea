@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UserHandler is user handlers
@@ -24,6 +25,39 @@ type UserHandler struct {
 // NewUsers is constructor
 func NewUsers(db *data.Database, v *data.Validation, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
 	return &UserHandler{userDB: db.UserDB, hotelDB: db.HotelDB, v: v, b: b, jwt: jwt}
+}
+
+//ShowBooking handler to show booking
+func (u *UserHandler) ShowBooking(c echo.Context) error {
+	c.Echo().Logger.Debug("Booking")
+
+	// get request
+	tokenDetail := c.Get("myuser").(models.UserTokenDetails)
+	user, err := u.userDB.FindOne(bson.M{"username": tokenDetail.Username})
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	if len(user.Bookings) == 0 {
+		return c.JSON(http.StatusNotFound, "no bookings")
+	}
+
+	bl := make([]interface{}, len(user.Bookings))
+	for i, b := range user.Bookings {
+		oid, err := primitive.ObjectIDFromHex(string(b))
+
+		if err != nil {
+			return err
+		}
+		bl[i] = bson.M{"_id": oid}
+	}
+	bookingHotels, err := u.hotelDB.Find(bson.M{"$or": bl})
+
+	if err != nil {
+		return err
+	}
+	//TODO: show more booking
+	return c.JSON(http.StatusOK, bookingHotels)
 }
 
 // RegisterUser handlers
