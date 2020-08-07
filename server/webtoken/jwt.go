@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"subsea/models"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -71,6 +72,28 @@ func (w *JWT) TokenValid(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+// ExtractTokenUserName extract username from token
+func (w *JWT) ExtractTokenUserName(r *http.Request) (*models.UserTokenDetails, error) {
+	token, err := w.VerifyToken(r)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if ok && token.Valid {
+		username, ok := claims["username"].(string)
+		if !ok {
+			return nil, err
+		}
+		return &models.UserTokenDetails{Username: username}, nil
+	}
+
+	// TODO: error
+	// token not contain username
+	return nil, err
 }
 
 // ExtractToken extract from http Header

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"subsea/models"
 	"subsea/webtoken"
@@ -72,6 +73,16 @@ func NewMiddlewareAuth(jwt *webtoken.JWT) echo.MiddlewareFunc {
 				return c.JSON(http.StatusUnauthorized, "Unauthorized")
 			}
 			c.Echo().Logger.Debug("token vaild")
+
+			tokenDetail, err := jwt.ExtractTokenUserName(c.Request())
+
+			if err != nil {
+				return c.JSON(http.StatusUnprocessableEntity, "can't extract payload")
+			}
+
+			c.Set("myuser", tokenDetail)
+
+			fmt.Println(tokenDetail)
 			if err := next(c); err != nil {
 				c.Error(err)
 			}

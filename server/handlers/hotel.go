@@ -9,19 +9,41 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// Hotels is hotel handlers
 type Hotels struct {
-	db *data.HotelDB
-	v  *data.Validation
+	hotelDB *data.HotelDB
+	userDB  *data.UserDB
+	v       *data.Validation
 }
 
+// NewHotels is constrctor
 func NewHotels(db *data.Database, v *data.Validation) *Hotels {
-	return &Hotels{db: db.HotelDB, v: v}
+	return &Hotels{hotelDB: db.HotelDB, userDB: db.UserDB, v: v}
+}
+
+// TODO:
+// middleware extract username
+// update username
+// update hotel
+
+// Booking booking user for hotel
+func (h *Hotels) Booking(c echo.Context) error {
+	c.Echo().Logger.Debug("ListHotels")
+	hotels, err := h.hotelDB.Find(bson.M{})
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if hotels == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	return c.JSON(http.StatusOK, hotels)
 }
 
 // ListHotels list all hotel in database
 func (h *Hotels) ListHotels(c echo.Context) error {
 	c.Echo().Logger.Debug("ListHotels")
-	hotels, err := h.db.Find(bson.M{})
+	hotels, err := h.hotelDB.Find(bson.M{})
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -37,7 +59,7 @@ func (h *Hotels) NewHotels(c echo.Context) error {
 	c.Echo().Logger.Debug("NewHotels")
 
 	hotel := c.Get("hotel").(models.Hotel)
-	findHotel, err := h.db.FindOne(bson.M{"name": hotel.Name})
+	findHotel, err := h.hotelDB.FindOne(bson.M{"name": hotel.Name})
 
 	if err != nil {
 		c.Echo().Logger.Error(err)
@@ -48,7 +70,7 @@ func (h *Hotels) NewHotels(c echo.Context) error {
 		return c.JSON(http.StatusConflict, `{"message": already exist }`)
 	}
 
-	err = h.db.Add(hotel)
+	err = h.hotelDB.Add(hotel)
 
 	if err != nil {
 		return err
@@ -61,7 +83,7 @@ func (h *Hotels) FindOneHotel(c echo.Context) error {
 	c.Echo().Logger.Debug("FindOneHotel")
 
 	name := c.Param("name")
-	hotel, err := h.db.FindOne(bson.M{"name": name})
+	hotel, err := h.hotelDB.FindOne(bson.M{"name": name})
 
 	if err != nil {
 		c.Echo().Logger.Error(err)
@@ -80,7 +102,9 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 
 	// TODO:
 	// index (I don't know how to use index in mongoDB)
-	// for search
+	// for searching
+	// we will search only match
+	// or use elistic search
 
 	name := c.QueryParam("name")
 	detail := c.QueryParam("detail")
@@ -94,7 +118,7 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 		filter["detail"] = detail
 	}
 
-	result, err := h.db.Find(filter)
+	result, err := h.hotelDB.Find(filter)
 
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
