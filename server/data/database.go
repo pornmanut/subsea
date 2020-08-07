@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+// ConnectMongoServer connect to mongo server with url
 func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(url)
 
@@ -26,14 +27,16 @@ func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) 
 	return client, nil
 }
 
+// Database define for database for this application
 type Database struct {
 	UserDB  *UserDB
 	HotelDB *HotelDB
 }
 
+// NewDatabase is constructor given by mongo client and name of db to create
 func NewDatabase(client *mongo.Client, nameOfDB string) *Database {
-	db := client.Database("subsea")
 
+	db := client.Database("subsea")
 	userDB := NewUserDB(db)
 	hotelDB := NewHotelDB(db)
 

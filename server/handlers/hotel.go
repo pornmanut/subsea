@@ -12,8 +12,9 @@ type Hotels struct {
 	db data.HotelDB
 }
 
-func NewHotels(db data.HotelDB) *Hotels {
-	return &Hotels{db: db}
+func NewHotels(db *data.Database) *Hotels {
+
+	return &Hotels{db: *db.HotelDB}
 }
 
 // ListHotels list all hotel in database

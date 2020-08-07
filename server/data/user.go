@@ -71,5 +71,3 @@ func (db *UserDB) DeleteOne(filter bson.M) error {
 	log.Println(result)
 	return nil
 }
-
-// func (db *UserDB)

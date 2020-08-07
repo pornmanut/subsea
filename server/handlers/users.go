@@ -14,15 +14,16 @@ import (
 
 // UserHandler is user handlers
 type UserHandler struct {
-	v   *data.Validation
-	db  *data.UserDB
-	b   *pwd.Bcrypt
-	jwt *webtoken.JWT
+	v       *data.Validation
+	userDB  *data.UserDB
+	hotelDB *data.HotelDB
+	b       *pwd.Bcrypt
+	jwt     *webtoken.JWT
 }
 
 // NewUsers is constructor
-func NewUsers(v *data.Validation, db *data.UserDB, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
-	return &UserHandler{db: db, v: v, b: b, jwt: jwt}
+func NewUsers(db data.Database, v *data.Validation, b *pwd.Bcrypt, jwt *webtoken.JWT) *UserHandler {
+	return &UserHandler{userDB: db.UserDB, hotelDB: db.HotelDB, v: v, b: b, jwt: jwt}
 }
 
 // RegisterUser handlers
@@ -32,7 +33,7 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 	regisUser := c.Get("user").(models.User)
 
 	//check email and username is already exist
-	findUser, err := u.db.FindOne(
+	findUser, err := u.userDB.FindOne(
 		bson.M{"$or": []interface{}{
 			bson.M{"username": regisUser.Username},
 			bson.M{"email": regisUser.Email},
@@ -49,7 +50,7 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 	// setting new password
 	regisUser.Password = hash
 
-	err = u.db.Add(regisUser)
+	err = u.userDB.Add(regisUser)
 
 	if err != nil {
 		return err
@@ -70,7 +71,7 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 	login := c.Get("login").(models.Login)
 
 	// find user for login
-	user, err := u.db.FindOne(bson.M{"username": login.Username})
+	user, err := u.userDB.FindOne(bson.M{"username": login.Username})
 
 	if err != nil {
 		return c.JSON(http.StatusNotFound, "Not found user")
