@@ -33,6 +33,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Card,
 } from '@material-ui/core';
 const drawerWidth = 240;
 
@@ -93,13 +94,32 @@ const useStyles = makeStyles((theme) => ({
   },
   mainContent: {
     marginTop: 50
+  },
+  userBar: {
+    margin: 10,
+    padding: 10
+
   }
 }));
-
-export default function App() {
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+function App() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  let [isLogin] = React.useState(false);
+  const token = localStorage.getItem("token")
+  let user
+  if (token) {
+    user = parseJwt(token)
+    isLogin = true
+  }
+  console.log(user)
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -109,6 +129,11 @@ export default function App() {
     setOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    window.location.reload(false);
+  }
+  //TODO: refactor
   return (
     <div className={classes.root}>
       <Router>
@@ -149,9 +174,18 @@ export default function App() {
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </div>
-          <h1>Item</h1>
+          <Divider />
+
+          <Typography className={classes.userBar}>
+            {isLogin ? "Username: " + user.username : null}
+          </Typography>
+
           <Divider />
           <List>
+            {!isLogin ? <ListItem button key="login" component={Link} to="/login" >
+              <ListItemIcon><VpnKeyIcon /></ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItem> : null}
             <ListItem button key="home" component={Link} to="/">
               <ListItemIcon><HomeIcon /></ListItemIcon>
               <ListItemText primary="Home" />
@@ -160,6 +194,11 @@ export default function App() {
               <ListItemIcon><BookIcon /></ListItemIcon>
               <ListItemText primary="My Bookings" />
             </ListItem>
+
+            {isLogin ? <ListItem button key="logout" onClick={handleLogout} >
+              <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem> : null}
           </List>
         </Drawer>
         <main
@@ -208,7 +247,7 @@ export default function App() {
 
 
 
-
+export default App
 
 
 
