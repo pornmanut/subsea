@@ -2,32 +2,39 @@ import React from 'react';
 import Hotel from './components/Hotel'
 import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
+import Login from "./Login"
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from  "react-router-dom";
+} from "react-router-dom";
 
 
 function App() {
   return (
-    <Router>
+    <div className="container">
+      <Router>
         <Switch>
-            <Route exact path="/admin">
-              <HotelList/>
-            </Route>
-            <Route exact path="/">
-              <HotelList/>
-            </Route>
-            <Route path='/hotels/:name' render={(props) => {
-                    return <Hotel name={props.match.params.name}/>
-                }} />
-            <Route>
-              {/* TODO: 404 */}
-              <Notfound/>
-            </Route>
-          </Switch>
-    </Router>
+          <Route exact path="/admin">
+            <HotelList />
+          </Route>
+          <Route exact path="/">
+            <HotelList />
+          </Route>
+          <Route path='/hotels/:name' render={(props) => {
+            return <Hotel name={props.match.params.name} />
+          }} />
+          <Route exact path='/login'>
+            <Login />
+          </Route>
+          <Route>
+            <Notfound />
+          </Route>
+
+        </Switch>
+      </Router>
+    </div>
+
   );
 }
 export default App;
