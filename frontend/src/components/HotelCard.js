@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 
 import {
+    Grid,
     Card,
     CardActionArea,
     CardActions,
@@ -55,17 +56,31 @@ class HotelCard extends React.Component {
                         style={styles.media}
                     />
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {hotel.name}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary" component="p">
-                            {hotel.detail}
-                        </Typography>
+
+                        <Grid container>
+
+                            <Grid item xs={10}>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    {hotel.name}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary" component="p">
+                                    {hotel.detail}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Typography variant="h5" align="right" color="textPrimary" component="p">
+                                    {hotel.price} $
+                                 </Typography>
+                            </Grid>
+                        </Grid>
+
+
                     </CardContent>
                     <CardActions>
                         <Button size="medium" color="inherit">
                             View Hotel Details
-                            </Button>
+                        </Button>
+
                     </CardActions>
                 </CardActionArea>
             </Card >

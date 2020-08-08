@@ -1,5 +1,5 @@
 import React from 'react';
-import Hotel from './components/Hotel'
+import Hotel from './components/HotelInfo'
 import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
 import Register from "./Register"
@@ -17,7 +17,7 @@ function App() {
     <div className="container">
       <Router>
         <Switch>
-          <Route exact path="/admin">
+          <Route exact path="/hotels">
             <HotelList />
           </Route>
           <Route exact path="/">
