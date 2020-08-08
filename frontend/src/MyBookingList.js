@@ -3,22 +3,11 @@ import axios from 'axios';
 import HotelCard from "./components/HotelCard"
 
 import {
-    Grid,
-    Button,
     Container,
     Typography,
-    TextField,
-    Backdrop,
-    CircularProgress,
-    Card,
-    CardActionArea,
-    CardActions,
-    CardContent,
-    CardMedia,
 
 } from '@material-ui/core';
 import {
-    Link,
     Redirect
 } from "react-router-dom"
 

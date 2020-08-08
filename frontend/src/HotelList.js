@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import Filter from "./components/Filter"
 import HotelCard from "./components/HotelCard"
 
 
