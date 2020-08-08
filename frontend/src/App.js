@@ -2,6 +2,7 @@ import React from 'react';
 import Hotel from './components/Hotel'
 import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
+import Register from "./Register"
 import Login from "./Login"
 import {
   BrowserRouter as Router,
@@ -26,6 +27,9 @@ function App() {
           }} />
           <Route exact path='/login'>
             <Login />
+          </Route>
+          <Route exact path='/register'>
+            <Register />
           </Route>
           <Route>
             <Notfound />
