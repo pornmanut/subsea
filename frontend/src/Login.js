@@ -2,6 +2,16 @@ import React from 'react'
 import axios from 'axios';
 import './Login.css';
 
+import {
+    Grid,
+    Button,
+    Container,
+    Typography,
+    TextField,
+    Backdrop,
+    CircularProgress
+
+} from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
 
 
@@ -11,31 +21,28 @@ class Login extends React.Component {
         const self = this;
         let token = '';
 
-
-
         const payload = {
             username: this.state.username,
             password: this.state.password
         }
         console.log(payload)
 
-        self.setState({ isLogining: true })
+        self.setState({ isLoading: true })
         try {
             const response = await axios.post(window.global.api_location + '/login', payload)
             token = response.data.token
-            self.setState({ isLogining: false, redirect: true, login: true })
+            self.setState({ isLoading: false, redirect: true, login: true })
         } catch (err) {
-            self.setState({ isLogining: false, redirect: true, login: false })
+            self.setState({ isLoading: false, login: false })
 
         }
-
         return token
 
     }
 
     constructor(props) {
         super(props);
-        this.state = { isLogining: false, username: "", redirect: null }
+        this.state = { isLoading: false, username: "", redirect: null }
         this.login = this.login.bind(this);
 
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -60,42 +67,35 @@ class Login extends React.Component {
     }
 
     render() {
-        console.log(this.state.isLogining)
-        if (this.state.isLogining === true) {
-            return (
-                <div>
-                    Login
-                </div>
-            )
-        }
-        if (this.state.redirect) {
-            if (this.state.login) {
-                return <Redirect to={"/"} />
+        const styles = {
+            backdrop: {
+                zIndex: 1,
+                color: '#fff',
+            },
+            input: {
+                width: "100%",
+                padding: 10,
+                marginTop: 20
             }
         }
+        if (this.state.redirect) {
+            return <Redirect to={"/"} />
+        }
         return (
-            <div className="container">
-                <form className="form-signin" onSubmit={this.handleSubmit} >
-                    <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
-                    <label className="sr-only">Username</label>
-                    <input
-                        type="username"
-                        name="username"
-                        className="form-control"
-                        placeholder="Username"
-                        onChange={this.handleChange}
-                    />
-                    <label htmlFor="inputPassword" className="sr-only">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        className="form-control"
-                        placeholder="Password"
-                        onChange={this.handleChange}
-                    />
-                    <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            <Container maxWidth="md" >
+                <form className="form-signin" onChange={this.handleChange} >
+                    <Typography variant="h5" component="h3">
+                        Please Sign in
+                    </Typography>
+                    <TextField id="outlined-basic" style={styles.input} name="username" label="Username" />
+                    <TextField id="outlined-basic" style={styles.input} name="password" type="password" label="Password" />
+                    <Button variant="contained" color="primary" onClick={this.handleSubmit}>Sign in</Button>
                 </form>
-            </div>
+                <Backdrop style={styles.backdrop} open={this.state.isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+            </Container>
+
         )
     }
 }
