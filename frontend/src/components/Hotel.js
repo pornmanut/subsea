@@ -7,27 +7,61 @@ import axios from 'axios';
 // max: 1
 // name: "abc"
 // price: 300
+
+// TODO: booking
 class Hotel extends React.Component {
     readData(name) {
         const self = this;
-        axios.get(window.global.api_location+'/hotels/'+name).then(function(response) {
+        axios.get(window.global.api_location + '/hotels/' + name).then(function (response) {
             console.log(response.data);
 
-            self.setState({hotel: response.data,found: true});
-        }).catch(function (error){
+            self.setState({ hotel: response.data, found: true });
+        }).catch(function (error) {
             console.log(error);
-            self.setState({found: false})
+            self.setState({ found: false })
         });
+    }
+
+
+    booking(name, token) {
+        // require token this request
+        const self = this;
+        axios.get(window.global.api_location + '/hotels/booking/' + name, {
+            headers: {
+                'Authorization': token
+            }
+        }).then(function (response) {
+            //reload page
+            window.location.reload(false);
+            console.log(response.data);
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+
+    handleSubmit() {
+        // get token from local
+
+        const token = localStorage.getItem("token")
+
+        if (token) {
+            this.booking(this.props.name, token)
+        }
+        // TODO: redirection to Login
+
     }
     constructor(props) {
         super(props);
-        this.state = {hotel: ""};
+        this.state = { hotel: "" };
         this.readData(props.name)
         this.readData = this.readData.bind(this);
+        this.booking = this.booking.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     render() {
-        if (!this.state.found){
+        if (!this.state.found) {
             return <div>loading</div>
         }
         return (
@@ -35,7 +69,8 @@ class Hotel extends React.Component {
                 <p>{this.state.hotel.name}</p>
                 <p>{this.state.hotel.price}</p>
                 <p>{this.state.hotel.detail}</p>
-            <p>{this.state.hotel.booking}/{this.state.hotel.max}</p>
+                <p>{this.state.hotel.booking}/{this.state.hotel.max}</p>
+                <button className="btn btn-primary" onClick={this.handleSubmit}>Booking</button>
             </div>
         )
     }
