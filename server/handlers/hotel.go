@@ -185,10 +185,5 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-
-	if result == nil {
-		return c.JSON(http.StatusNotFound, "Not found")
-	}
-
 	return c.JSON(http.StatusOK, result)
 }
