@@ -112,22 +112,22 @@ class HotelList extends React.Component {
                     <Grid item xs={10}>
                         <Grid container>
                             <Grid item xs={6}>
-                                <TextField style={styles.input} id="outlined-basic" name="name" label="Name" onChange={this.handleChange} />
+                                <TextField style={styles.input} type="search" id="outlined-basic" name="name" label="Name" onChange={this.handleChange} />
 
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField style={styles.input} id="outlined-basic" name="detail" label="Detail" onChange={this.handleChange} />
+                                <TextField style={styles.input} type="search" id="outlined-basic" name="detail" label="Detail" onChange={this.handleChange} />
 
                             </Grid>
                         </Grid>
 
                         <Grid container>
                             <Grid item xs={6}>
-                                <TextField style={styles.input} id="outlined-basic" name="lt" label="Less than" onChange={this.handleChange} />
+                                <TextField style={styles.input} type="search" id="outlined-basic" name="lt" label="Less than" onChange={this.handleChange} />
 
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField style={styles.input} id="outlined-basic" name="gt" label="Greater than" onChange={this.handleChange} />
+                                <TextField style={styles.input} type="search" id="outlined-basic" name="gt" label="Greater than" onChange={this.handleChange} />
 
                             </Grid>
                         </Grid>

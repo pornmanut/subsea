@@ -1,21 +1,34 @@
 import React from 'react'
 import axios from 'axios';
-import DatePicker from "react-datepicker";
 import { Redirect } from 'react-router-dom';
 
-import "react-datepicker/dist/react-datepicker.css";
+
+import {
+    Grid,
+    Button,
+    Container,
+    Typography,
+    TextField,
+    Backdrop,
+    CircularProgress
+
+} from '@material-ui/core';
+
 class Register extends React.Component {
 
     register(payload) {
         const self = this;
         console.log(payload)
+        this.setState({ isLoading: true })
 
         axios.post(window.global.api_location + '/register', payload)
             .then(response => {
                 console.log(response)
+                this.setState({ isLoading: false, redirect: true })
             })
             .catch(err => {
                 console.log(err)
+                this.setState({ isLoading: false })
             })
 
 
@@ -29,6 +42,7 @@ class Register extends React.Component {
         this.setState({
             [name]: value
         });
+        console.log(this.state)
     };
 
     handleSubmit(event) {
@@ -39,7 +53,7 @@ class Register extends React.Component {
         // TODO: verfiy field 
 
 
-        const { email, firstname, lastname, username, password1, password2, currentDate } = this.state
+        const { email, firstname, lastname, username, password1, password2, birthdate } = this.state
 
         if (password1 !== password2) {
             // TODO: handle error password not match
@@ -53,7 +67,7 @@ class Register extends React.Component {
             password: password1,
             firstname,
             lastname,
-            birthdate: currentDate
+            birthdate
         }
 
         this.register(payload)
@@ -63,7 +77,7 @@ class Register extends React.Component {
         super(props);
 
         this.state = {
-            currentDate: new Date()
+            isLoading: false
         };
 
         this.handleChange = this.handleChange.bind(this)
@@ -74,57 +88,76 @@ class Register extends React.Component {
 
 
     render() {
+        const styles = {
+            backdrop: {
+                zIndex: 1,
+                color: '#fff',
+            },
+        }
+
+        if (this.state.redirect) {
+            return <Redirect to="/login" />
+        }
         return (
-            <div>
+            <Container maxWidth="md">
+                <Typography gutterBottom variant="h6" component="h4">
+                    Register
+                </Typography>
+                <form onChange={this.handleChange} >
+                    <Grid container>
+                        <Grid item xs={6}>
 
+                            <TextField id="outlined-basic" name="email" label="Email" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField id="outlined-basic" name="username" label="Username" />
 
-                <form onChange={this.handleChange} onSubmit={this.handleSubmit}>
-                    <div className="form-row">
-                        <div className="col-md-4 mb-3">
-                            <label>Email</label>
-                            <input type="email" className="form-control" name="email" placeholder="Email" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Firstname</label>
-                            <input type="text" className="form-control" name="firstname" placeholder="First name" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Lastname</label>
-                            <input type="text" className="form-control" name="lastname" placeholder="Last name" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Username</label>
-                            <input type="text" className="form-control" name="username" placeholder="username" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Password</label>
-                            <input type="password" className="form-control" name="password1" placeholder="password" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Comfilm Password</label>
-                            <input type="password" className="form-control" name="password2" placeholder="password" />
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label>Birthdate</label>
-                            {/* <DatePicker
-                                className="form-control"
-                                selected={this.state.startDate}
-                                onChange={this.handleChange}
-                            /> */}
-                        </div>
-                    </div>
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={6}>
+                            <TextField id="outlined-basic" name="firstname" label="Firstname" />
 
-                    <div className="form-group">
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="" id="invalidCheck2" required />
-                            <label className="form-check-label" >
-                                Agree to terms and conditions
-                </label>
-                        </div>
-                    </div>
-                    <button className="btn btn-primary" type="submit">Submit form</button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField id="outlined-basic" name="lastname" label="Lastname" />
+
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={6}>
+                            <TextField id="outlined-basic" name="password1" type="password" label="Password" />
+
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField id="outlined-basic" name="password2" type="password" label="Confirm Password" />
+
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={6}>
+                            <TextField
+                                id="date"
+                                name="birthdate"
+                                label="Brithday"
+                                type="date"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Button variant="contained" color="primary" onClick={this.handleSubmit}>Submit</Button>
+
+                        </Grid>
+                    </Grid>
+
                 </form>
-            </div>
+                <Backdrop style={styles.backdrop} open={this.state.isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+
+            </Container >
+
         )
     }
 }

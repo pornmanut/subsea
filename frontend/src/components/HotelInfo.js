@@ -15,6 +15,7 @@ import {
     Divider
 
 } from '@material-ui/core';
+import NotFound from './NotFound';
 // booking: 1
 // detail: "great view"
 // height: 30.3
@@ -91,19 +92,19 @@ class Hotel extends React.Component {
                 paddingRight: 20
             },
             booking: {
-                marginTop: 200
+                marginTop: 100
             }
 
         }
         const hotel = this.state.hotel
         if (!this.state.found) {
-            return <div>loading</div>
+            return <NotFound />
         }
         if (this.state.toLogin) {
             return <Redirect to="/login" />
         }
         return (
-            <Container>
+            <Container maxWidth="md">
                 <Paper>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
