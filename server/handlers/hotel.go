@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"subsea/data"
 	"subsea/models"
 
@@ -43,6 +44,10 @@ func (h *Hotels) Booking(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
+	if hotels.Booking >= hotels.Max {
+		return c.JSON(400, "Can't booking no avaliable")
+	}
+
 	hotels.Booking = hotels.Booking + 1
 	user.Bookings = append(user.Bookings, models.Booking(hotels.ID.Hex()))
 	// TODO: must change to objectID
@@ -125,8 +130,52 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 	// or use elistic search
 
 	name := c.QueryParam("name")
-	// detail := c.QueryParam("detail")
-	filter := bson.M{"name": bson.D{{"$regex", primitive.Regex{Pattern: name, Options: "i"}}}}
+	detail := c.QueryParam("detail")
+	lt := c.QueryParam("lt")
+	gt := c.QueryParam("gt")
+
+	requestTag := []bson.M{}
+
+	if name != "" {
+		requestTag = append(
+			requestTag,
+			bson.M{"name": bson.D{
+				{"$regex", primitive.Regex{Pattern: name, Options: "i"}},
+			}})
+	}
+	if detail != "" {
+		requestTag = append(
+			requestTag,
+			bson.M{"detail": bson.D{
+				{"$regex", primitive.Regex{Pattern: detail, Options: "i"}},
+			}})
+	}
+
+	if lt != "" {
+		max, err := strconv.Atoi(lt)
+		if err != nil {
+			return err
+		}
+		requestTag = append(
+			requestTag,
+			bson.M{"price": bson.M{
+				"$lt": max,
+			}})
+	}
+
+	if gt != "" {
+		min, err := strconv.Atoi(lt)
+		if err != nil {
+			return err
+		}
+		requestTag = append(
+			requestTag,
+			bson.M{"price": bson.M{
+				"$gt": min,
+			}})
+	}
+
+	filter := bson.M{"$and": requestTag}
 	fmt.Println(filter)
 	result, err := h.hotelDB.Find(filter)
 	fmt.Println(result)
