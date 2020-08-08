@@ -59,7 +59,7 @@ func main() {
 
 	// POST hotel
 	e.POST("/hotels", hotelH.NewHotels, hotelH.MiddlewareValidateHotel)
-	e.POST("/hotels/booking/:name", hotelH.Booking, middlewareAuth)
+	e.GET("/hotels/booking/:name", hotelH.Booking, middlewareAuth)
 
 	// GET hotel
 	e.GET("/hotels", hotelH.SearchHotel)

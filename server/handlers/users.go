@@ -82,6 +82,7 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 		return err
 	}
 	// setting new password
+	regisUser.ID = primitive.NewObjectID()
 	regisUser.Password = hash
 
 	err = u.userDB.Add(regisUser)
