@@ -3,6 +3,7 @@ import Hotel from './components/Hotel'
 import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
 import Register from "./Register"
+import MyBookingList from "./MyBookingList"
 import Login from "./Login"
 import {
   BrowserRouter as Router,
@@ -31,13 +32,16 @@ function App() {
           <Route exact path='/register'>
             <Register />
           </Route>
+          <Route exact path='/mybookings'>
+            <MyBookingList />
+          </Route>
           <Route>
             <Notfound />
           </Route>
 
         </Switch>
       </Router>
-    </div>
+    </div >
 
   );
 }
