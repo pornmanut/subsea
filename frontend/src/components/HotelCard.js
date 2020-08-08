@@ -76,12 +76,6 @@ class HotelCard extends React.Component {
 
 
                     </CardContent>
-                    <CardActions>
-                        <Button size="medium" color="inherit">
-                            View Hotel Details
-                        </Button>
-
-                    </CardActions>
                 </CardActionArea>
             </Card >
         );
