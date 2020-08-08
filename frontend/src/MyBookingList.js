@@ -1,7 +1,22 @@
 import React from 'react';
 import axios from 'axios';
-import Filter from "./components/Filter"
+import HotelCard from "./components/HotelCard"
 
+import {
+    Grid,
+    Button,
+    Container,
+    Typography,
+    TextField,
+    Backdrop,
+    CircularProgress,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardMedia,
+
+} from '@material-ui/core';
 import {
     Link,
     Redirect
@@ -20,6 +35,7 @@ class MyBookingList extends React.Component {
         };
 
         this.getBookingList = this.getBookingList.bind(this)
+        this.getHotels = this.getHotels.bind(this)
     }
     getBookingList(token) {
         // require token this request
@@ -31,6 +47,7 @@ class MyBookingList extends React.Component {
         }).then(function (response) {
             self.setState({ hotels: response.data })
         }).catch(function (error) {
+            self.setState({ hotels: [] })
             console.log(error);
         });
     }
@@ -39,19 +56,42 @@ class MyBookingList extends React.Component {
     componentDidMount() {
         this.getBookingList(this.state.token)
     }
+    getHotels() {
+        let table = []
 
+        for (let i = 0; i < this.state.hotels.length; i++) {
+            table.push(
+                <HotelCard key={i} hotel={this.state.hotels[i]} />
+            );
+        }
+
+        return table
+    }
     render() {
         // already login
         if (this.state.token) {
-            console.log(this.state.hotels)
+
+            if (this.state.hotels.length === 0) {
+                return (
+                    <Container maxWidth="md">
+                        <Typography>
+                            No bookings
+                        </Typography>
+                    </Container>
+                )
+            }
             return (
-                <div>
-                </div>
+                <Container maxWidth="md">
+                    <Typography variant="h6" component="h4">
+                        My Bookings
+                    </Typography>
+                    {this.getHotels()}
+                </Container>
             )
         }
 
 
-        return <Redirect to={"/"} />
+        return <Redirect to={"/login"} />
 
     }
 }
