@@ -124,10 +124,8 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 	c.Echo().Logger.Debug("SearchHotel")
 
 	// TODO:
-	// index (I don't know how to use index in mongoDB)
-	// for searching
-	// we will search only match
-	// or use elistic search
+	// REFACTOR !!!!!!!!!!!!!!!!!!!!!!
+	// YOU CODE IS SLOW
 
 	name := c.QueryParam("name")
 	detail := c.QueryParam("detail")
@@ -135,13 +133,14 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 	gt := c.QueryParam("gt")
 
 	requestTag := []bson.M{}
-
+	numOfOptions := 0
 	if name != "" {
 		requestTag = append(
 			requestTag,
 			bson.M{"name": bson.D{
 				{"$regex", primitive.Regex{Pattern: name, Options: "i"}},
 			}})
+		numOfOptions++
 	}
 	if detail != "" {
 		requestTag = append(
@@ -149,8 +148,8 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 			bson.M{"detail": bson.D{
 				{"$regex", primitive.Regex{Pattern: detail, Options: "i"}},
 			}})
+		numOfOptions++
 	}
-
 	if lt != "" {
 		max, err := strconv.Atoi(lt)
 		if err != nil {
@@ -161,8 +160,8 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 			bson.M{"price": bson.M{
 				"$lt": max,
 			}})
+		numOfOptions++
 	}
-
 	if gt != "" {
 		min, err := strconv.Atoi(lt)
 		if err != nil {
@@ -173,9 +172,13 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 			bson.M{"price": bson.M{
 				"$gt": min,
 			}})
+		numOfOptions++
 	}
-
 	filter := bson.M{"$and": requestTag}
+
+	if numOfOptions == 0 {
+		filter = bson.M{}
+	}
 	fmt.Println(filter)
 	result, err := h.hotelDB.Find(filter)
 	fmt.Println(result)
