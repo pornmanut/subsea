@@ -1,5 +1,8 @@
 import React from 'react'
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import { Redirect } from 'react-router-dom';
+
 // booking: 1
 // detail: "great view"
 // height: 30.3
@@ -47,9 +50,10 @@ class Hotel extends React.Component {
 
         if (token) {
             this.booking(this.props.name, token)
+            return
         }
         // TODO: redirection to Login
-
+        this.setState({ toLogin: true })
     }
     constructor(props) {
         super(props);
@@ -64,12 +68,16 @@ class Hotel extends React.Component {
         if (!this.state.found) {
             return <div>loading</div>
         }
+        if (this.state.toLogin) {
+            return <Redirect to="/login" />
+        }
         return (
             <div className="container">
                 <p>{this.state.hotel.name}</p>
                 <p>{this.state.hotel.price}</p>
                 <p>{this.state.hotel.detail}</p>
                 <p>{this.state.hotel.booking}/{this.state.hotel.max}</p>
+                <Button variant="contained" color="primary" onClick={this.handleSubmit} >Booking</Button>
                 <button className="btn btn-primary" onClick={this.handleSubmit}>Booking</button>
             </div>
         )
