@@ -43,7 +43,7 @@ func (db *HotelDB) FindOne(filter bson.M) (*models.Hotel, error) {
 }
 
 //Find find many records from collection given by filter returns to a collection of user
-func (db *HotelDB) Find(filter bson.M) (models.Hotels, error) {
+func (db *HotelDB) Find(filter interface{}) (models.Hotels, error) {
 	cursor, err := db.collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err

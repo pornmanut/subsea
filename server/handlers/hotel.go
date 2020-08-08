@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Hotels is hotel handlers
@@ -124,19 +125,11 @@ func (h *Hotels) SearchHotel(c echo.Context) error {
 	// or use elistic search
 
 	name := c.QueryParam("name")
-	detail := c.QueryParam("detail")
-
-	filter := bson.M{}
-
-	if name != "" {
-		filter["name"] = name
-	}
-	if detail != "" {
-		filter["detail"] = detail
-	}
-
+	// detail := c.QueryParam("detail")
+	filter := bson.M{"name": bson.D{{"$regex", primitive.Regex{Pattern: name, Options: "i"}}}}
+	fmt.Println(filter)
 	result, err := h.hotelDB.Find(filter)
-
+	fmt.Println(result)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
