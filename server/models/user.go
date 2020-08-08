@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // Booking define a string match to object_id of hotels collection
 type Booking string
@@ -28,8 +30,4 @@ type Login struct {
 
 type UserTokenDetails struct {
 	Username string `json:"username"`
-}
-
-type TokenResponse struct {
-	Token string `json:"token"`
 }

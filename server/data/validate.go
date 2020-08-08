@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"regexp"
+	"subsea/models"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -33,6 +34,24 @@ func (v ValidationErrors) Errors() []string {
 		errs = append(errs, err.Error())
 	}
 	return errs
+}
+
+// Response methods return errors response
+func (v ValidationError) Response() models.ValidateErrorResponse {
+	return models.ValidateErrorResponse{
+		Namespace: v.Namespace(),
+		Field:     v.Field(),
+		Tag:       v.Tag(),
+	}
+}
+
+// Response methods return errors response
+func (v ValidationErrors) Response() models.ValidateErrorsResponse {
+	res := []models.ValidateErrorResponse{}
+	for _, re := range v {
+		res = append(res, re.Response())
+	}
+	return models.ValidateErrorsResponse{Errors: res}
 }
 
 // Validation is a CustomValidator

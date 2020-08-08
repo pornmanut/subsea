@@ -21,7 +21,7 @@ func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.Handler
 		errs := u.v.Validate(user)
 
 		if len(errs) > 0 {
-			return c.JSON(http.StatusUnprocessableEntity, errs.Errors())
+			return c.JSON(http.StatusUnprocessableEntity, errs.Response())
 		}
 
 		// TODO: check dulipcate email
@@ -50,7 +50,7 @@ func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.Handle
 		errs := u.v.Validate(login)
 
 		if len(errs) > 0 {
-			return c.JSON(http.StatusUnprocessableEntity, errs.Errors())
+			return c.JSON(http.StatusUnprocessableEntity, errs.Response())
 		}
 
 		// add user to context
