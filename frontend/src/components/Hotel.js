@@ -1,6 +1,5 @@
 import React from 'react'
 import axios from 'axios';
-import NotFound from './NotFound';
 // booking: 1
 // detail: "great view"
 // height: 30.3
@@ -29,13 +28,14 @@ class Hotel extends React.Component {
 
     render() {
         if (!this.state.found){
-            return <NotFound/>
+            return <div>loading</div>
         }
         return (
             <div className="container">
                 <p>{this.state.hotel.name}</p>
                 <p>{this.state.hotel.price}</p>
                 <p>{this.state.hotel.detail}</p>
+            <p>{this.state.hotel.booking}/{this.state.hotel.max}</p>
             </div>
         )
     }

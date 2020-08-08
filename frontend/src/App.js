@@ -1,6 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
-import axios from 'axios';
 import Hotel from './components/Hotel'
 import Notfound from './components/NotFound'
 import HotelList from "./HotelList"
@@ -23,7 +21,6 @@ function App() {
             </Route>
             <Route path='/hotels/:name' render={(props) => {
                     return <Hotel name={props.match.params.name}/>
-
                 }} />
             <Route>
               {/* TODO: 404 */}
