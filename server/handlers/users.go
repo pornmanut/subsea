@@ -135,7 +135,7 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, fmt.Sprintf("Token %s", token))
+		return c.JSON(http.StatusOK, models.TokenResponse{Token: fmt.Sprintf("Bearer %s", token)})
 	}
 	return c.JSON(http.StatusUnauthorized, "Password doesn't match")
 }

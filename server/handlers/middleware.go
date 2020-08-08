@@ -42,6 +42,7 @@ func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.Handle
 	return func(c echo.Context) error {
 		var login models.Login
 		// bind user
+
 		if err := c.Bind(&login); err != nil {
 			return c.NoContent(http.StatusBadRequest)
 		}

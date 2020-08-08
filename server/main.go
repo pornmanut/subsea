@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/nicholasjackson/env"
 )
@@ -52,14 +53,18 @@ func main() {
 
 	// basic handler
 
+	// add cors to public api.
+	// allow all
+	e.Use(middleware.CORS())
+
 	// POST hotel
 	e.POST("/hotels", hotelH.NewHotels, hotelH.MiddlewareValidateHotel)
 	e.POST("/hotels/booking/:name", hotelH.Booking, middlewareAuth)
 
 	// GET hotel
-	e.GET("/hotels", hotelH.ListHotels)
+	e.GET("/hotels", hotelH.SearchHotel)
 	e.GET("/hotels/:name", hotelH.FindOneHotel)
-	e.GET("/hotels/search", hotelH.SearchHotel)
+	// e.GET("/hotels/search", hotelH.SearchHotel)
 
 	// POST user
 	e.POST("/register", userH.RegisterUser, userH.MiddlewareValidateUser)

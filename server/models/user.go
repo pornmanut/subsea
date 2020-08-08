@@ -29,3 +29,7 @@ type Login struct {
 type UserTokenDetails struct {
 	Username string `json:"username"`
 }
+
+type TokenResponse struct {
+	Token string `json:"token"`
+}
