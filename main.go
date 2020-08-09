@@ -20,6 +20,8 @@ var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for t
 
 // IN ENV MUST BE THE NAME OF CONTAINER FOR CONNECT such as mogodb://mongoDB:27017
 var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
+var dbusename = env.String("DB_USERNAME", true, "", "Username for database")
+var dbpassword = env.String("DB_PASSWORD", true, "", "Password for database")
 var jwtSecret = env.String("JWT_SECRET", false, "cat", "Secret for jwt")
 
 func main() {

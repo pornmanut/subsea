@@ -9,8 +9,19 @@ import (
 )
 
 // ConnectMongoServer connect to mongo server with url
-func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(url)
+func ConnectMongoServer(ctx context.Context, url, username, password string) (*mongo.Client, error) {
+	// Configure a Client with SCRAM authentication (https://docs.mongodb.com/manual/core/security-scram/).
+	// The default authentication database for SCRAM is "admin". This can be configured via the
+	// authSource query parameter in the URI or the AuthSource field in the options.Credential struct.
+	// SCRAM is the default auth mechanism so specifying a mechanism is not required.
+
+	// To configure auth via URI instead of a Credential, use
+	// "mongodb://user:password@localhost:27017".
+	credential := options.Credential{
+		Username: username,
+		Password: password,
+	}
+	clientOptions := options.Client().ApplyURI(url).SetAuth(credential)
 	client, err := mongo.Connect(ctx, clientOptions)
 
 	if err != nil {
