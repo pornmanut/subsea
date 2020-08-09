@@ -16,7 +16,7 @@ import (
 	"github.com/nicholasjackson/env"
 )
 
-var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for the server")
+var bindAddress = env.String("PORT", false, "8080", "Bind Address for the server")
 
 // IN ENV MUST BE THE NAME OF CONTAINER FOR CONNECT such as mogodb://mongoDB:27017
 var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
@@ -85,7 +85,7 @@ func main() {
 	e.GET("/secret", hello, middlewareAuth)
 
 	// serve server on port
-	e.Logger.Fatal(e.Start(*bindAddress))
+	e.Logger.Fatal(e.Start(":" + *bindAddress))
 }
 
 func hello(c echo.Context) error {
