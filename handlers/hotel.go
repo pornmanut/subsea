@@ -93,6 +93,8 @@ func (h *Hotels) NewHotels(c echo.Context) error {
 		return c.JSON(http.StatusConflict, `{"message": already exist }`)
 	}
 
+	hotel.ID = primitive.NewObjectID()
+
 	err = h.hotelDB.Add(hotel)
 
 	if err != nil {
