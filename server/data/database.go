@@ -11,7 +11,6 @@ import (
 // ConnectMongoServer connect to mongo server with url
 func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(url)
-
 	client, err := mongo.Connect(ctx, clientOptions)
 
 	if err != nil {

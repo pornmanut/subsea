@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"subsea/data"
 	handlers "subsea/handlers"
@@ -16,6 +17,8 @@ import (
 )
 
 var bindAddress = env.String("BIND_ADDRESS", false, ":8080", "Bind Address for the server")
+
+// IN ENV MUST BE THE NAME OF CONTAINER FOR CONNECT such as mogodb://mongoDB:27017
 var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
 var jwtSecret = env.String("JWT_SECRET", false, "cat", "Secret for jwt")
 
@@ -27,6 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	//create new servr
 	e := echo.New()
 
@@ -36,9 +40,15 @@ func main() {
 	j := webtoken.NewJWT(6*time.Hour, *jwtSecret)
 	middlewareAuth := handlers.NewMiddlewareAuth(j)
 	// setting up new log
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	fmt.Println("DB address", *dbAddress)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
 	defer client.Disconnect(ctx)
+
+	if err != nil {
+		fmt.Println("Can't connect to database")
+		panic(err)
+	}
 
 	db := data.NewDatabase(client, "subsea")
 

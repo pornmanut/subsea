@@ -102,7 +102,7 @@ func (u *Hotels) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc
 		var hotel models.Hotel
 		// bind user
 		if err := c.Bind(&hotel); err != nil {
-			return c.NoContent(http.StatusBadRequest)
+			return c.JSON(http.StatusBadRequest, err)
 		}
 		// validate the user
 		errs := u.v.Validate(hotel)

@@ -15,5 +15,5 @@ type Hotel struct {
 	Detail  string             `json:"detail" validate:"required"`
 	Height  float32            `json:"height" validate:"required"`
 	Booking int                `json:"booking"`
-	Max     int                `json:"max"`
+	Max     int                `json:"max" validate:"required"`
 }
