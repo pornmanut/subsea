@@ -24,7 +24,7 @@ func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) 
 	// }
 	// fmt.Println(credential)
 	// .SetAuth(credential)
-	clientOptions := options.Client().ApplyURI(url)
+	clientOptions := options.Client().ApplyURI(url + "?retryWrites=false")
 	client, err := mongo.Connect(ctx, clientOptions)
 
 	if err != nil {
