@@ -91,6 +91,7 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 	c.Echo().Logger.Info("INSERT")
 
 	err = u.userDB.Add(regisUser)
+	c.Echo().Logger.Info("USER ADD", err)
 
 	if err != nil {
 		return err
