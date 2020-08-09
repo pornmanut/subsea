@@ -1,3 +1,3 @@
 window.global = {
-    api_location: "https://pornmanuty-subsea.herokuapp.com/",
+    api_location: "https://pornmanuty-subsea.herokuapp.com",
 }
