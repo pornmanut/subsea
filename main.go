@@ -42,6 +42,7 @@ func main() {
 	middlewareAuth := handlers.NewMiddlewareAuth(j)
 	// setting up new log
 	fmt.Println("DB address", *dbAddress)
+	fmt.Println("DB Name", *dbName)
 	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	client, err := data.ConnectMongoServer(ctx, *dbAddress)
 	defer client.Disconnect(ctx)
