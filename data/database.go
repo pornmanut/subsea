@@ -49,7 +49,7 @@ type Database struct {
 // NewDatabase is constructor given by mongo client and name of db to create
 func NewDatabase(client *mongo.Client, nameOfDB string) *Database {
 
-	db := client.Database("subsea")
+	db := client.Database(nameOfDB)
 	userDB := NewUserDB(db)
 	hotelDB := NewHotelDB(db)
 

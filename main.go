@@ -20,6 +20,7 @@ var bindAddress = env.String("PORT", false, "8080", "Bind Address for the server
 
 // IN ENV MUST BE THE NAME OF CONTAINER FOR CONNECT such as mogodb://mongoDB:27017
 var dbAddress = env.String("DB_ADDRESS", false, "mongodb://localhost:27017", "Database server Address")
+var dbName = env.String("DB_NAME", false, "subsea", "Database Name")
 var jwtSecret = env.String("JWT_SECRET", false, "cat", "Secret for jwt")
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 		panic(err)
 	}
 
-	db := data.NewDatabase(client, "subsea")
+	db := data.NewDatabase(client, *dbName)
 
 	if err != nil {
 		e.Logger.Fatal(err)
