@@ -1,0 +1,29 @@
+version: "3"
+services:
+  db:
+    container_name: mongoDB
+    image: mongo
+    ports:
+    - "27017:27017"
+    volumes:
+      - "./mongodata:/data/db"
+    networks:
+      - mynetwork
+  app:
+    container_name: subsea
+    build: ./server
+    ports:
+    - "8080:8080"
+    depends_on:
+    - "db"
+    networks:
+      - mynetwork
+    env_file:
+      - .env
+
+
+volumes:
+  mongodata:
+
+networks:
+  mynetwork:

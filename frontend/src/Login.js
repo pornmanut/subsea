@@ -1,7 +1,9 @@
 import React from 'react'
 import axios from 'axios';
 import './Login.css';
-
+import {
+    Link
+} from "react-router-dom";
 import {
     Grid,
     Button,
@@ -76,6 +78,9 @@ class Login extends React.Component {
                 width: "100%",
                 padding: 10,
                 marginTop: 20
+            },
+            register: {
+                marginTop: 20
             }
         }
         if (this.state.redirect) {
@@ -91,10 +96,14 @@ class Login extends React.Component {
                     <TextField id="outlined-basic" style={styles.input} name="password" type="password" label="Password" />
                     <Button variant="contained" color="primary" onClick={this.handleSubmit}>Sign in</Button>
                 </form>
+                <Button variant="contained" style={styles.register} color="secondary" component={Link} to={"/register"}>Register</Button>
                 <Backdrop style={styles.backdrop} open={this.state.isLoading}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
+
             </Container>
+
+
 
         )
     }
