@@ -72,18 +72,23 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 			bson.M{"username": regisUser.Username},
 			bson.M{"email": regisUser.Email},
 		}})
+	c.Echo().Logger.Info("FIND")
 
 	if findUser != nil {
 		return c.JSON(http.StatusConflict, `{"message": already exist }`)
 	}
 
 	hash, err := u.b.Hash(regisUser.Password)
+	c.Echo().Logger.Info("HASH")
+
 	if err != nil {
 		return err
 	}
 	// setting new password
 	regisUser.ID = primitive.NewObjectID()
 	regisUser.Password = hash
+
+	c.Echo().Logger.Info("INSERT")
 
 	err = u.userDB.Add(regisUser)
 
