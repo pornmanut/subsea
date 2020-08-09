@@ -11,7 +11,7 @@ services:
       - mynetwork
   app:
     container_name: subsea
-    build: ./server
+    build: .
     ports:
     - "8080:8080"
     depends_on:
