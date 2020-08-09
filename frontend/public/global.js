@@ -1,3 +1,3 @@
 window.global = {
-    api_location: 'http://localhost:8080',
+    api_location: process.env.MY_API,
 }
