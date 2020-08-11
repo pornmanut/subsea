@@ -36,6 +36,12 @@ func (db *HotelMongoDB) CreateHotel(hotel models.Hotel) (string, error) {
 	// setting up context time out
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	// check already hotel on name
+	_, err := db.FindHotelByName(hotel.Name)
+
+	if err == nil {
+		return "", errors.ErrHotelAlreadyExists
+	}
 
 	// setting up new Object ID
 	hotel.ID = primitive.NewObjectID()

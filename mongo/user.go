@@ -53,7 +53,7 @@ func (db *UserMongoDB) CreateUser(user models.User) (string, error) {
 
 // FindUserByUsername is a methods for find one User given by username
 // return with username models and error from mongoDB collection
-func (db *HotelMongoDB) FindUserByUsername(username string) (*models.User, error) {
+func (db *UserMongoDB) FindUserByUsername(username string) (*models.User, error) {
 	// setting up context time out
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

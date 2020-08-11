@@ -1,11 +1,9 @@
 package data
 
 import (
-	"errors"
+	"subsea/errors"
 	"subsea/models"
 )
-
-
 
 //TODO:
 // booking
@@ -42,6 +40,14 @@ func NewDatabase(userDB UserDB, hotelDB HotelDB) *Database {
 func (db *Database) ShowUserBooking(username string) (models.Hotels, error) {
 	user, err := db.UserDB.FindUserByUsername(username)
 
-	// check if found user
-	if err == db.UserDB.
+	if err != nil {
+		return nil, err
+	}
+
+	if len(user.Bookings) == 0 {
+		return nil, errors.ErrNoDocuments
+	}
+
+	//TODO: handle bookings
+	return nil, nil
 }
