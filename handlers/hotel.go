@@ -15,7 +15,7 @@ import (
 // Hotels is hotel handlers
 type Hotels struct {
 	hotelDB *data.HotelMongoDB
-	userDB  *data.UserDB
+	userDB  *data.UserMongoDB
 	v       *data.Validation
 }
 

@@ -9,17 +9,17 @@ services:
       - "./mongodata:/data/db"
     networks:
       - mynetwork
-  app:
-    container_name: subsea
-    build: .
-    ports:
-    - "8080:8080"
-    depends_on:
-    - "db"
-    networks:
-      - mynetwork
-    env_file:
-      - .env
+  # app:
+    # container_name: subsea
+    # build: .
+    # ports:
+    # - "8080:8080"
+    # depends_on:
+    # - "db"
+    # networks:
+    #   - mynetwork
+    # env_file:
+    #   - .env
 
 
 volumes:

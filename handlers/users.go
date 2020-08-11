@@ -16,7 +16,7 @@ import (
 // UserHandler is user handlers
 type UserHandler struct {
 	v       *data.Validation
-	userDB  *data.UserDB
+	userDB  *data.UserMongoDB
 	hotelDB *data.HotelMongoDB
 	b       *pwd.Bcrypt
 	jwt     *webtoken.JWT

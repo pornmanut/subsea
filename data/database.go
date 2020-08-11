@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"subsea/models"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,23 +16,14 @@ var ErrObjectID = errors.New("Can not covert object into primitive ObjectID")
 // ErrNoDocuments is an error. when cannot find any result
 var ErrNoDocuments = errors.New("Not found any document on request")
 
+//TODO:
+// booking
+
 // ConnectMongoServer connect to mongo server with url
 func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) {
-	// Configure a Client with SCRAM authentication (https://docs.mongodb.com/manual/core/security-scram/).
-	// The default authentication database for SCRAM is "admin". This can be configured via the
-	// authSource query parameter in the URI or the AuthSource field in the options.Credential struct.
-	// SCRAM is the default auth mechanism so specifying a mechanism is not required.
 
-	// To configure auth via URI instead of a Credential, use
-	// "mongodb://user:password@localhost:27017".
-	// credential := options.Credential{
-	// 	Username:      username,
-	// 	Password:      password,
-	// 	AuthMechanism: "SCRAM-SHA-1",
-	// }
-	// fmt.Println(credential)
-	// .SetAuth(credential)
-	clientOptions := options.Client().ApplyURI(url + "?retryWrites=false")
+	// url = url + "?retryWrites=false"
+	clientOptions := options.Client().ApplyURI(url)
 	client, err := mongo.Connect(ctx, clientOptions)
 
 	if err != nil {
@@ -47,9 +39,25 @@ func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) 
 	return client, nil
 }
 
-// Database define for database for this application
+// HotelDB is an interface for interact with hotel Database
+type HotelDB interface {
+	CreateHotel(models.Hotel) (string, error)
+	FindHotelByName(string) (models.Hotel, error)
+	ListAllHotels() (models.Hotels, error)
+	RemoveHotelByName(string) (bool, error)
+}
+
+// UserDB is an interface for interact with users Database
+type UserDB interface {
+	CreateUser(models.User) (string, error)
+	// IsUserExist given by email and username <- easy version
+	IsUserExist(string, string) (models.User, error)
+	ListAllUsers() (models.Users, error)
+}
+
+// Database is a main database for application
 type Database struct {
-	UserDB  *UserDB
+	UserDB  *UserMongoDB
 	HotelDB *HotelMongoDB
 }
 
@@ -61,4 +69,8 @@ func NewDatabase(client *mongo.Client, nameOfDB string) *Database {
 	hotelDB := NewHotelDB(db)
 
 	return &Database{UserDB: userDB, HotelDB: hotelDB}
+}
+
+// ShowBooking is a method for database using two database for booking
+func (db *Database) ShowBooking(username string) {
 }
