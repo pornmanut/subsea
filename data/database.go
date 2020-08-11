@@ -2,11 +2,18 @@ package data
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+// ErrObjectID is an error. when cannot covert objectID
+var ErrObjectID = errors.New("Can not covert object into primitive ObjectID")
+
+// ErrNoDocuments is an error. when cannot find any result
+var ErrNoDocuments = errors.New("Not found any document on request")
 
 // ConnectMongoServer connect to mongo server with url
 func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) {
@@ -43,7 +50,7 @@ func ConnectMongoServer(ctx context.Context, url string) (*mongo.Client, error) 
 // Database define for database for this application
 type Database struct {
 	UserDB  *UserDB
-	HotelDB *HotelDB
+	HotelDB *HotelMongoDB
 }
 
 // NewDatabase is constructor given by mongo client and name of db to create

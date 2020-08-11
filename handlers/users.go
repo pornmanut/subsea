@@ -17,7 +17,7 @@ import (
 type UserHandler struct {
 	v       *data.Validation
 	userDB  *data.UserDB
-	hotelDB *data.HotelDB
+	hotelDB *data.HotelMongoDB
 	b       *pwd.Bcrypt
 	jwt     *webtoken.JWT
 }
