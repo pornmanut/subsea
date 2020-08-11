@@ -21,8 +21,8 @@ type UserDB interface {
 	CreateUser(models.User) (string, error)
 	// IsUserExist given by email and username <- easy version
 	// FindIsUserExists(string, string) (models.User, error)
-	FindUserByUsername(string) (models.User, error)
-	ListAllUsers() (models.Users, error)
+	FindUserByUsername(string) (*models.User, error)
+	// ListAllUsers() (models.Users, error)
 }
 
 // Database is a main database for application

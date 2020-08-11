@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"subsea/data"
 	handlers "subsea/handlers"
+	"subsea/mongo"
 	"subsea/pwd"
 	"subsea/webtoken"
 	"time"
@@ -44,8 +45,10 @@ func main() {
 	// setting up new log
 	fmt.Println("DB address", *dbAddress)
 	fmt.Println("DB Name", *dbName)
-	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
-	client, err := data.ConnectMongoServer(ctx, *dbAddress)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	client, err := mongo.ConnectMongoServer(ctx, *dbAddress)
 	defer client.Disconnect(ctx)
 
 	if err != nil {
@@ -53,13 +56,19 @@ func main() {
 		panic(err)
 	}
 
-	db := data.NewDatabase(client, *dbName)
+	// user mongo
+	database := client.Database(*dbName)
+
+	hotelDB := mongo.NewHotelDB(database)
+	userDB := mongo.NewUserDB(database)
+
+	db := data.NewDatabase(userDB, hotelDB)
 
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	hotelH := handlers.NewHotels(db, v)
+	hotelH := handlers.NewHotelsHandler(db, v)
 	userH := handlers.NewUsers(db, v, b, j)
 
 	e.Logger.SetLevel(log.DEBUG)
