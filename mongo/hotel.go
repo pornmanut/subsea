@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"log"
+	"subsea/errors"
 	"subsea/models"
 	"time"
 
@@ -68,6 +69,13 @@ func (db *HotelMongoDB) FindHotelByName(name string) (*models.Hotel, error) {
 
 	// handling error from case not found
 	err := res.Err()
+
+	// matching error from outside if not found any document
+	if err == mongo.ErrNoDocuments {
+		return nil, errors.ErrNoDocuments
+	}
+
+	// normal handler error
 	if err != nil {
 		return nil, err
 	}
