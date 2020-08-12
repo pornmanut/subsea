@@ -2,14 +2,24 @@ package handlers
 
 import (
 	"net/http"
+	"subsea/data"
 	"subsea/models"
 	"subsea/webtoken"
 
 	"github.com/labstack/echo/v4"
 )
 
+type MiddlewareHandler struct {
+	v   *data.Validation
+	jwt *webtoken.JWT
+}
+
+func NewMiddleware(v *data.Validation) *MiddlewareHandler {
+	return &MiddlewareHandler{v: v}
+}
+
 // MiddlewareValidateUser validates the user in the request and call net it ok
-func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.HandlerFunc {
+func (m *MiddlewareHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.HandlerFunc {
 	// header
 	return func(c echo.Context) error {
 		var user models.User
@@ -18,7 +28,7 @@ func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.Handler
 			return c.NoContent(http.StatusBadRequest)
 		}
 		// validate the user
-		errs := u.v.Validate(user)
+		errs := m.v.Validate(user)
 
 		if len(errs) > 0 {
 			return c.JSON(http.StatusUnprocessableEntity, errs.Response())
@@ -38,7 +48,7 @@ func (u *UserHandler) MiddlewareValidateUser(next echo.HandlerFunc) echo.Handler
 }
 
 // MiddlewareValidateLogin validates the login in the request and call net it ok
-func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.HandlerFunc {
+func (m *MiddlewareHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var login models.Login
 		// bind user
@@ -47,7 +57,7 @@ func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.Handle
 			return c.NoContent(http.StatusBadRequest)
 		}
 		// validate the user
-		errs := u.v.Validate(login)
+		errs := m.v.Validate(login)
 
 		if len(errs) > 0 {
 			return c.JSON(http.StatusUnprocessableEntity, errs.Response())
@@ -64,33 +74,31 @@ func (u *UserHandler) MiddlewareValidateLogin(next echo.HandlerFunc) echo.Handle
 }
 
 //NewMiddlewareAuth is construct for create middleware auth
-func NewMiddlewareAuth(jwt *webtoken.JWT) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			err := jwt.TokenValid(c.Request())
-			if err != nil {
-				c.Echo().Logger.Debug("token not vaild")
-				return c.JSON(http.StatusUnauthorized, "Unauthorized")
-			}
-			c.Echo().Logger.Debug("token vaild")
-
-			tokenDetail, err := jwt.ExtractTokenUserName(c.Request())
-
-			if err != nil {
-				return c.JSON(http.StatusUnprocessableEntity, "can't extract payload")
-			}
-
-			c.Set("myuser", *tokenDetail)
-			if err := next(c); err != nil {
-				c.Error(err)
-			}
-			return nil
+func (m *MiddlewareHandler) MiddlewareAuth(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		err := m.jwt.TokenValid(c.Request())
+		if err != nil {
+			c.Echo().Logger.Debug("token not vaild")
+			return c.JSON(http.StatusUnauthorized, "Unauthorized")
 		}
+		c.Echo().Logger.Debug("token vaild")
+
+		tokenDetail, err := m.jwt.ExtractTokenUserName(c.Request())
+
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, "can't extract payload")
+		}
+
+		c.Set("myuser", *tokenDetail)
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
 	}
 }
 
 // MiddlewareValidateHotel validates the hotel in the request and call net it ok
-func (u *Hotels) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc {
+func (m *MiddlewareHandler) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc {
 	// header
 	return func(c echo.Context) error {
 
@@ -105,7 +113,7 @@ func (u *Hotels) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc
 			return c.JSON(http.StatusBadRequest, err)
 		}
 		// validate the user
-		errs := u.v.Validate(hotel)
+		errs := m.v.Validate(hotel)
 
 		if len(errs) > 0 {
 			return c.JSON(http.StatusUnprocessableEntity, errs.Errors())
@@ -123,22 +131,3 @@ func (u *Hotels) MiddlewareValidateHotel(next echo.HandlerFunc) echo.HandlerFunc
 	}
 
 }
-
-// // MiddlewareFindByUserName given by user. find it and set to context
-// func (u *UserHandler) MiddlewareCheckUserNameIsExist(db *data.UserDB, next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		requestUser := c.Get("user").(models.User)
-// 		user, err := db.Find(bson.M{"username": requestUser.Username})
-
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		if user
-// 		// call next
-// 		if err := next(c); err != nil {
-// 			c.Error(err)
-// 		}
-// 		return nil
-// 	}
-// }

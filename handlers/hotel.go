@@ -2,25 +2,25 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"subsea/data"
 	"subsea/errors"
 	"subsea/models"
 
+	hclog "github.com/hashicorp/go-hclog"
+
 	"github.com/labstack/echo/v4"
 )
 
-// Hotels is hotel handlers
+// HotelsHandler is hotel handlers
 type HotelsHandler struct {
 	db *data.Database
-	v  *data.Validation
-	l  *log.Logger
+	l  *hclog.Logger
 }
 
 // NewHotelsHandler is constrctor
-func NewHotelsHandler(db *data.Database, v *data.Validation) *HotelsHandler {
-	return &HotelsHandler{db: db, v: v}
+func NewHotelsHandler(db *data.Database, l *hclog.Logger) *HotelsHandler {
+	return &HotelsHandler{db: db, l: l}
 }
 
 // TODO:
