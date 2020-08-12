@@ -15,11 +15,11 @@ import (
 // HotelsHandler is hotel handlers
 type HotelsHandler struct {
 	db *data.Database
-	l  *hclog.Logger
+	l  hclog.Logger
 }
 
 // NewHotelsHandler is constrctor
-func NewHotelsHandler(db *data.Database, l *hclog.Logger) *HotelsHandler {
+func NewHotelsHandler(db *data.Database, l hclog.Logger) *HotelsHandler {
 	return &HotelsHandler{db: db, l: l}
 }
 
@@ -64,20 +64,24 @@ func NewHotelsHandler(db *data.Database, l *hclog.Logger) *HotelsHandler {
 
 // ListHotels list all hotel in database
 func (h *HotelsHandler) ListHotels(c echo.Context) error {
+	h.l.Info("HotelHandler", "ListHotels Request")
 	hotels, err := h.db.HotelDB.ListAllHotels()
 
 	if err == errors.ErrNoDocuments {
+		h.l.Error("Not found any hotel")
 		return c.JSON(
 			http.StatusNotFound,
 			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
 		)
 	}
 	if err != nil {
+		h.l.Error("Error", err)
 		return c.JSON(
 			http.StatusInternalServerError,
 			models.ErrorResponse{Error: err.Error()},
 		)
 	}
+	h.l.Info("Succesfully", "ListHotel")
 	return c.JSON(http.StatusOK, hotels)
 }
 

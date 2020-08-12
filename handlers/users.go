@@ -16,13 +16,13 @@ import (
 // UserHandler is user handlers
 type UserHandler struct {
 	db  *data.Database
-	l   *hclog.Logger
+	l   hclog.Logger
 	b   *pwd.Bcrypt
 	jwt *webtoken.JWT
 }
 
 // NewUsersHandler is constructor
-func NewUsersHandler(db *data.Database, l *hclog.Logger, jwt *webtoken.JWT, b *pwd.Bcrypt) *UserHandler {
+func NewUsersHandler(db *data.Database, l hclog.Logger, jwt *webtoken.JWT, b *pwd.Bcrypt) *UserHandler {
 	return &UserHandler{db: db, l: l, b: b, jwt: jwt}
 }
 
