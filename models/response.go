@@ -12,3 +12,8 @@ type ValidateErrorResponse struct {
 	Field     string `json:"field"`
 	Tag       string `json:"tag"`
 }
+
+// ErrorResponse reponse message for error
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

@@ -69,13 +69,13 @@ func (h *HotelsHandler) ListHotels(c echo.Context) error {
 	if err == errors.ErrNoDocuments {
 		return c.JSON(
 			http.StatusNotFound,
-			errors.ResponseSingleError{Error: errors.ErrNoDocuments.Error()},
+			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
 		)
 	}
 	if err != nil {
 		return c.JSON(
 			http.StatusInternalServerError,
-			errors.ResponseSingleError{Error: err.Error()},
+			models.ErrorResponse{Error: err.Error()},
 		)
 	}
 	return c.JSON(http.StatusOK, hotels)
@@ -90,14 +90,14 @@ func (h *HotelsHandler) NewHotels(c echo.Context) error {
 	if err != errors.ErrNoDocuments {
 		return c.JSON(
 			http.StatusInternalServerError,
-			errors.ResponseSingleError{Error: err.Error()},
+			models.ErrorResponse{Error: err.Error()},
 		)
 	}
 	// check if already exists
 	if findHotel != nil {
 		return c.JSON(
 			http.StatusConflict,
-			errors.ResponseSingleError{Error: errors.ErrHotelAlreadyExists.Error()},
+			models.ErrorResponse{Error: errors.ErrHotelAlreadyExists.Error()},
 		)
 	}
 
@@ -106,7 +106,7 @@ func (h *HotelsHandler) NewHotels(c echo.Context) error {
 	if err != nil {
 		return c.JSON(
 			http.StatusInternalServerError,
-			errors.ResponseSingleError{Error: err.Error()},
+			models.ErrorResponse{Error: err.Error()},
 		)
 	}
 	return c.JSON(http.StatusOK, fmt.Sprintf("success with %s", id))
@@ -121,13 +121,13 @@ func (h *HotelsHandler) FindOneHotel(c echo.Context) error {
 	if err == errors.ErrNoDocuments {
 		return c.JSON(
 			http.StatusNotFound,
-			errors.ResponseSingleError{Error: errors.ErrNoDocuments.Error()},
+			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
 		)
 	}
 	if err != nil {
 		return c.JSON(
 			http.StatusInternalServerError,
-			errors.ResponseSingleError{Error: err.Error()},
+			models.ErrorResponse{Error: err.Error()},
 		)
 	}
 

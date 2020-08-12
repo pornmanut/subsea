@@ -14,8 +14,8 @@ type MiddlewareHandler struct {
 	jwt *webtoken.JWT
 }
 
-func NewMiddleware(v *data.Validation) *MiddlewareHandler {
-	return &MiddlewareHandler{v: v}
+func NewMiddleware(v *data.Validation, jwt *webtoken.JWT) *MiddlewareHandler {
+	return &MiddlewareHandler{v: v, jwt: jwt}
 }
 
 // MiddlewareValidateUser validates the user in the request and call net it ok
