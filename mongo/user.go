@@ -57,10 +57,14 @@ func (db *UserMongoDB) FindUserByUsername(username string) (*models.User, error)
 	defer cancel()
 
 	// find one user from mongoDB
-	res := db.collection.FindOne(ctx, bson.M{username: username})
+	res := db.collection.FindOne(ctx, bson.M{"username": username})
 
 	// handling error from case not found
 	err := res.Err()
+
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -73,5 +77,37 @@ func (db *UserMongoDB) FindUserByUsername(username string) (*models.User, error)
 		return nil, err
 	}
 
+	return user, nil
+}
+
+// FindUserByEmail is a methods for find one User given by email
+// return with username models and error from mongoDB collection
+func (db *UserMongoDB) FindUserByEmail(email string) (*models.User, error) {
+	// setting up context time out
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// find one user from mongoDB
+	res := db.collection.FindOne(ctx, bson.M{"email": email})
+
+	// handling error from case not found
+	err := res.Err()
+
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// create new Hotel
+	user := new(models.User)
+	// decode result into hotel struct
+	err = res.Decode(user)
+
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }

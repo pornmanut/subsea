@@ -59,63 +59,47 @@ func NewUsersHandler(db *data.Database, l hclog.Logger, jwt *webtoken.JWT, b *pw
 // 	return c.JSON(http.StatusOK, bookingHotels)
 // }
 
-// // RegisterUser handlers
-// func (u *UserHandler) RegisterUser(c echo.Context) error {
-// 	c.Echo().Logger.Debug("Register")
+// RegisterUser handler is a register handler for put model.User to database
+// also validate exists user
+func (u *UserHandler) RegisterUser(c echo.Context) error {
+	u.l.Info("Register User Handler")
 
-// 	regisUser := c.Get("user").(models.User)
+	user := c.Get("user").(models.User)
 
-// 	//check email and username is already exist
-// 	findUser, err := u.db.UserDB.FindOne(
-// 		bson.M{"$or": []interface{}{
-// 			bson.M{"username": regisUser.Username},
-// 			bson.M{"email": regisUser.Email},
-// 		}})
-// 	c.Echo().Logger.Info("FIND")
+	fmt.Println(user)
+	if err := u.isEmailExists(c, user.Email); err != nil {
+		fmt.Println("Inside", err)
+		return err
+	}
 
-// 	if findUser != nil {
-// 		return c.JSON(http.StatusConflict, `{"message": already exist }`)
-// 	}
+	err := u.isEmailExists(c, user.Email)
+	fmt.Println("Error", err)
+	if err := u.isUsernameExists(c, user.Username); err != nil {
+		return err
+	}
 
-// 	hash, err := u.b.Hash(regisUser.Password)
-// 	c.Echo().Logger.Info("HASH")
+	// hashing password for store
+	hash, err := u.b.Hash(user.Password)
 
-// 	if err != nil {
-// 		return err
-// 	}
-// 	// setting new password
-// 	regisUser.ID = primitive.NewObjectID()
-// 	regisUser.Password = hash
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
+	}
 
-// 	c.Echo().Logger.Info("INSERT")
+	// set new password
+	user.Password = hash
 
-// 	err = u.userDB.Add(regisUser)
-// 	c.Echo().Logger.Info("USER ADD", err)
+	id, err := u.db.UserDB.CreateUser(user)
 
-// 	if err != nil {
-// 		return err
-// 	}
-// 	c.Echo().Logger.Info("Insert User:", fmt.Sprintf("%+v\n", regisUser))
-// 	return c.JSON(http.StatusOK, "success")
-// }
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
+	}
 
-// ListUsers handlers
-// func (u *UserHandler) ListUsers(c echo.Context) error {
-
-// 	//check email and username is already exist
-// 	findUser, err := u.db.UserDB.
-
-// 	if err != nil {
-// 		return c.NoContent(http.StatusInternalServerError)
-// 	}
-// 	if findUser == nil {
-// 		return c.NoContent(http.StatusNotFound)
-// 	}
-
-// 	return c.JSON(http.StatusOK, findUser)
-// }
-
-//TODO: delete
+	u.l.Info("Succesfuly create new user", "ID", id)
+	return c.JSON(
+		http.StatusOK,
+		models.SuccessCreated{ID: id, Message: "Sucessfully create new user"},
+	)
+}
 
 // LoginUser handlers is a login handlers to get models.login
 // and compare password and hash return jwt token for store in front-side
@@ -132,11 +116,8 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
 		)
 	}
-	if err != nil {
-		return c.JSON(
-			http.StatusInternalServerError,
-			models.ErrorResponse{Error: err.Error()},
-		)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
 	}
 	// not compare password
 	if !u.b.Compare(login.Password, user.Password) {
@@ -148,12 +129,65 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 	// create token
 	token, err := u.jwt.CreateToken(user.Username)
 
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
+	}
+
+	return c.JSON(
+		http.StatusOK,
+		models.TokenResponse{Token: fmt.Sprintf("Bearer %s", token)},
+	)
+}
+
+// unexport
+
+func (u *UserHandler) handleUnknowError(c echo.Context, err error) error {
 	if err != nil {
+
 		return c.JSON(
 			http.StatusInternalServerError,
 			models.ErrorResponse{Error: err.Error()},
 		)
 	}
+	return nil
+}
 
-	return c.JSON(http.StatusOK, models.TokenResponse{Token: fmt.Sprintf("Bearer %s", token)})
+func (u *UserHandler) isEmailExists(c echo.Context, email string) error {
+	u.l.Info("Checking Email", "email", email)
+	user := new(models.User)
+	user, err := u.db.UserDB.FindUserByEmail(email)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
+	}
+
+	// user exists
+	if user != nil {
+		u.l.Error("Conflict", "user", user)
+		err := c.JSON(
+			http.StatusConflict,
+			models.ErrorResponse{Error: errors.ErrEmailAlreadyExists.Error()},
+		)
+		fmt.Println(err)
+
+		return err
+	}
+	return nil
+}
+
+func (u *UserHandler) isUsernameExists(c echo.Context, username string) error {
+
+	user := new(models.User)
+	user, err := u.db.UserDB.FindUserByUsername(username)
+
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
+	}
+	// user exists
+	if user != nil {
+		return c.JSON(
+			http.StatusConflict,
+			models.ErrorResponse{Error: errors.ErrUsernameAlreadyExists.Error()},
+		)
+	}
+	return nil
 }

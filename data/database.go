@@ -19,6 +19,7 @@ type HotelDB interface {
 // UserDB is an interface for interact with users Database
 type UserDB interface {
 	CreateUser(models.User) (string, error)
+	FindUserByEmail(string) (*models.User, error)
 	// IsUserExist given by email and username <- easy version
 	// FindIsUserExists(string, string) (models.User, error)
 	FindUserByUsername(string) (*models.User, error)

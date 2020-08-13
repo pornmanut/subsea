@@ -93,7 +93,7 @@ func main() {
 	// e.GET("/hotels/search", hotelH.SearchHotel)
 
 	// POST user
-	// e.POST("/register", userH.RegisterUser, userH.MiddlewareValidateUser)
+	e.POST("/register", userH.RegisterUser, middlewareH.MiddlewareValidateUser)
 	e.POST("/login", userH.LoginUser, middlewareH.MiddlewareValidateLogin)
 
 	// e.GET("/users", userH.ListUser, middlewareAuth)

@@ -17,3 +17,9 @@ type ValidateErrorResponse struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+// SuccessCreated reponse message when success put into database
+type SuccessCreated struct {
+	ID      string `json:"id"`
+	Message string `json:"message"`
+}
