@@ -15,7 +15,8 @@ type ValidateErrorResponse struct {
 
 // ErrorResponse reponse message for error
 type ErrorResponse struct {
-	Error string `json:"error"`
+	Code    int    `json:"code"`
+	Message string `json:"error"`
 }
 
 // SuccessCreated reponse message when success put into database

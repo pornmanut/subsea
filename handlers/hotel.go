@@ -67,19 +67,19 @@ func (h *HotelsHandler) ListHotels(c echo.Context) error {
 	h.l.Info("HotelHandler", "ListHotels Request")
 	hotels, err := h.db.HotelDB.ListAllHotels()
 
-	if err == errors.ErrNoDocuments {
-		h.l.Error("Not found any hotel")
+	if hotels == nil {
+		h.l.Info("Not found any hotel")
 		return c.JSON(
 			http.StatusNotFound,
-			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
+			models.ErrorResponse{
+				Code:    http.StatusNotFound,
+				Message: errors.ErrNoDocuments.Error(),
+			},
 		)
+
 	}
-	if err != nil {
-		h.l.Error("Error", err)
-		return c.JSON(
-			http.StatusInternalServerError,
-			models.ErrorResponse{Error: err.Error()},
-		)
+	if err := handleUnknowError(err); err != nil {
+		return c.JSON(err.Code, err)
 	}
 	h.l.Info("Succesfully", "ListHotel")
 	return c.JSON(http.StatusOK, hotels)
@@ -88,30 +88,15 @@ func (h *HotelsHandler) ListHotels(c echo.Context) error {
 // NewHotels handlers add a hotel into database
 func (h *HotelsHandler) NewHotels(c echo.Context) error {
 	hotel := c.Get("hotel").(models.Hotel)
-	findHotel, err := h.db.HotelDB.FindHotelByName(hotel.Name)
 
-	// except not found
-	if err != errors.ErrNoDocuments {
-		return c.JSON(
-			http.StatusInternalServerError,
-			models.ErrorResponse{Error: err.Error()},
-		)
-	}
-	// check if already exists
-	if findHotel != nil {
-		return c.JSON(
-			http.StatusConflict,
-			models.ErrorResponse{Error: errors.ErrHotelAlreadyExists.Error()},
-		)
+	if err := h.isNameExists(hotel.Name); err != nil {
+		return c.JSON(err.Code, err)
 	}
 
 	id, err := h.db.HotelDB.CreateHotel(hotel)
 
-	if err != nil {
-		return c.JSON(
-			http.StatusInternalServerError,
-			models.ErrorResponse{Error: err.Error()},
-		)
+	if err := handleUnknowError(err); err != nil {
+		return c.JSON(err.Code, err)
 	}
 	return c.JSON(http.StatusOK, fmt.Sprintf("success with %s", id))
 }
@@ -122,20 +107,41 @@ func (h *HotelsHandler) FindOneHotel(c echo.Context) error {
 	name := c.Param("name")
 	hotel, err := h.db.HotelDB.FindHotelByName(name)
 
-	if err == errors.ErrNoDocuments {
+	if hotel == nil {
+		h.l.Info("Not found hotel")
 		return c.JSON(
 			http.StatusNotFound,
-			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
+			models.ErrorResponse{
+				Code:    http.StatusNotFound,
+				Message: errors.ErrNoDocuments.Error(),
+			},
 		)
+
 	}
-	if err != nil {
-		return c.JSON(
-			http.StatusInternalServerError,
-			models.ErrorResponse{Error: err.Error()},
-		)
+	if err := handleUnknowError(err); err != nil {
+		return c.JSON(err.Code, err)
 	}
 
 	return c.JSON(http.StatusOK, hotel)
+}
+
+func (h *HotelsHandler) isNameExists(name string) *models.ErrorResponse {
+	h.l.Info("Checking Name", "name", name)
+	user := new(models.Hotel)
+	user, err := h.db.HotelDB.FindHotelByName(name)
+	if err := handleUnknowError(err); err != nil {
+		return err
+	}
+
+	// user exists
+	if user != nil {
+		h.l.Error("Conflict", "user", user)
+		return &models.ErrorResponse{
+			Code:    http.StatusConflict,
+			Message: errors.ErrEmailAlreadyExists.Error(),
+		}
+	}
+	return nil
 }
 
 // // SearchHotel querry params
