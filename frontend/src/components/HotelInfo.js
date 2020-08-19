@@ -98,7 +98,7 @@ class Hotel extends React.Component {
         }
         const hotel = this.state.hotel
         if (!this.state.found) {
-            return <NotFound />
+            return <p>Loading</p>
         }
         if (this.state.toLogin) {
             return <Redirect to="/login" />
