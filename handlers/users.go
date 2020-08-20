@@ -67,19 +67,22 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 	user := c.Get("user").(models.User)
 
 	fmt.Println(user)
-	if err := u.isEmailExists(user.Email); err != nil {
-		return c.JSON(err.Code, err)
+	if err := u.isEmailExists(c, user.Email); err != nil {
+		fmt.Println("Inside", err)
+		return err
 	}
 
-	if err := u.isUsernameExists(user.Username); err != nil {
-		return c.JSON(err.Code, err)
+	err := u.isEmailExists(c, user.Email)
+	fmt.Println("Error", err)
+	if err := u.isUsernameExists(c, user.Username); err != nil {
+		return err
 	}
 
 	// hashing password for store
 	hash, err := u.b.Hash(user.Password)
 
-	if err := handleUnknowError(err); err != nil {
-		return c.JSON(err.Code, err)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
 	}
 
 	// set new password
@@ -87,8 +90,8 @@ func (u *UserHandler) RegisterUser(c echo.Context) error {
 
 	id, err := u.db.UserDB.CreateUser(user)
 
-	if err := handleUnknowError(err); err != nil {
-		return c.JSON(err.Code, err)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
 	}
 
 	u.l.Info("Succesfuly create new user", "ID", id)
@@ -107,33 +110,27 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 	// find user for login
 	user, err := u.db.UserDB.FindUserByUsername(login.Username)
 
-	if user == nil {
+	if err == errors.ErrNoDocuments {
 		return c.JSON(
 			http.StatusNotFound,
-			models.ErrorResponse{
-				Code:    http.StatusNotFound,
-				Message: errors.ErrNoDocuments.Error(),
-			},
+			models.ErrorResponse{Error: errors.ErrNoDocuments.Error()},
 		)
 	}
-	if err := handleUnknowError(err); err != nil {
-		return c.JSON(err.Code, err)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
 	}
 	// not compare password
 	if !u.b.Compare(login.Password, user.Password) {
 		return c.JSON(
 			http.StatusUnauthorized,
-			models.ErrorResponse{
-				Code:    http.StatusUnauthorized,
-				Message: errors.ErrPasswordNotMatch.Error(),
-			},
+			models.ErrorResponse{Error: errors.ErrPasswordNotMatch.Error()},
 		)
 	}
 	// create token
 	token, err := u.jwt.CreateToken(user.Username)
 
-	if err := handleUnknowError(err); err != nil {
-		return c.JSON(err.Code, err)
+	if err := u.handleUnknowError(c, err); err != nil {
+		return err
 	}
 
 	return c.JSON(
@@ -144,51 +141,53 @@ func (u *UserHandler) LoginUser(c echo.Context) error {
 
 // unexport
 
-func handleUnknowError(err error) *models.ErrorResponse {
+func (u *UserHandler) handleUnknowError(c echo.Context, err error) error {
 	if err != nil {
-		return &models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
+
+		return c.JSON(
+			http.StatusInternalServerError,
+			models.ErrorResponse{Error: err.Error()},
+		)
 	}
 	return nil
 }
 
-func (u *UserHandler) isEmailExists(email string) *models.ErrorResponse {
+func (u *UserHandler) isEmailExists(c echo.Context, email string) error {
 	u.l.Info("Checking Email", "email", email)
 	user := new(models.User)
 	user, err := u.db.UserDB.FindUserByEmail(email)
-	if err := handleUnknowError(err); err != nil {
+	if err := u.handleUnknowError(c, err); err != nil {
 		return err
 	}
 
 	// user exists
 	if user != nil {
-		u.l.Error("Conflict", "email", email)
-		return &models.ErrorResponse{
-			Code:    http.StatusConflict,
-			Message: errors.ErrEmailAlreadyExists.Error(),
-		}
+		u.l.Error("Conflict", "user", user)
+		err := c.JSON(
+			http.StatusConflict,
+			models.ErrorResponse{Error: errors.ErrEmailAlreadyExists.Error()},
+		)
+		fmt.Println(err)
+
+		return err
 	}
 	return nil
 }
 
-func (u *UserHandler) isUsernameExists(username string) *models.ErrorResponse {
-	u.l.Info("Checking Email", "username", username)
+func (u *UserHandler) isUsernameExists(c echo.Context, username string) error {
 
 	user := new(models.User)
 	user, err := u.db.UserDB.FindUserByUsername(username)
 
-	if err := handleUnknowError(err); err != nil {
+	if err := u.handleUnknowError(c, err); err != nil {
 		return err
 	}
 	// user exists
 	if user != nil {
-		u.l.Error("Conflict", "username", username)
-		return &models.ErrorResponse{
-			Code:    http.StatusConflict,
-			Message: errors.ErrUsernameAlreadyExists.Error(),
-		}
+		return c.JSON(
+			http.StatusConflict,
+			models.ErrorResponse{Error: errors.ErrUsernameAlreadyExists.Error()},
+		)
 	}
 	return nil
 }
