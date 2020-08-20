@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"subsea/errors"
 	"subsea/models"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,7 +29,6 @@ func (db *UserMongoDB) CreateUser(user models.User) (string, error) {
 	// setting up context time out
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
 	// setting up new Object ID
 	user.ID = primitive.NewObjectID()
 
@@ -110,4 +110,26 @@ func (db *UserMongoDB) FindUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+// RemoveUserByUserName a methods for remove one user from mongoDB
+// Given by username return with error if error or not found document
+func (db *UserMongoDB) RemoveUserByUserName(username string) error {
+	// setting up context time out
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	deleteResult, err := db.collection.DeleteOne(
+		ctx,
+		bson.M{"username": username},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return errors.ErrNoDocuments
+	}
+	return nil
 }
