@@ -81,11 +81,6 @@ func main() {
 	// CORS using options for public api
 	e.Use(middleware.CORS())
 
-	// route
-
-	//
-	// e.GET("/hotels/booking/:name", hotelH.Booking, middlewareAuth)
-
 	// GET hotel
 	e.GET("/hotels", hotelH.ListHotels)
 	e.POST("/hotels", hotelH.NewHotels, middlewareH.MiddlewareAuth)
